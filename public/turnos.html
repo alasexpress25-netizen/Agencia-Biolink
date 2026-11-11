@@ -199,8 +199,8 @@
             </svg>
             <span>📲 Confirmar y Enviar Turno por WhatsApp</span>
           </button>
-          <p class="text-[11px] text-center text-slate-500 mt-2.5">
-            Destino: WhatsApp oficial (+55 48 99905-3493)
+          <p id="waDestination" class="text-[11px] text-center text-slate-500 mt-2.5">
+            Destino: WhatsApp oficial (+—)
           </p>
         </div>
 
@@ -213,8 +213,9 @@
     <p>Sistema de Reservas Directo por WhatsApp</p>
   </footer>
 
+  <script src="i18n-pages.js"></script>
   <script>
-    let WA_NUMBER = '5548999053493'; // solo respaldo; se sobrescribe desde clientConfig.json
+    let WA_NUMBER = ''; // se completa desde la config del cliente; vacío = reservas sin configurar
     // Lee la config: primero ./clientConfig.json (valores por defecto del build) y luego,
     // si hay Supabase, la versión publicada por el cliente (tiene prioridad).
     async function loadClientConfig() {
@@ -238,6 +239,9 @@
             const remote = rows[0] && rows[0].config;
             if (remote && Object.keys(remote).length > 0) {
               base = Object.assign({}, base, remote);
+              base._remote = 'ready';
+            } else {
+              base._remote = 'empty'; // cliente nuevo: la plantilla del build no es su configuración
             }
           }
         } catch (e) { /* se queda con la config del build */ }
@@ -312,11 +316,14 @@
       try {
         const config = await loadClientConfig();
         if (config) {
+          if (window.i18n && config.profile && config.profile.defaultLang) i18n.setDefault(config.profile.defaultLang);
           // Extract WhatsApp number if available in social links
-          const waSocial = config.profile?.socialLinks?.find(s => s.platform === 'whatsapp' && s.active);
-          if (waSocial?.url) {
-            const m = waSocial.url.match(/wa\.me\/(\d+)/) || waSocial.url.match(/phone=(\d+)/);
-            if (m) WA_NUMBER = m[1];
+          // Prioridad: enlace social de WhatsApp (lo último que editó el cliente) y luego profile.whatsappNumber.
+          // Si la fila del cliente todavía está vacía (no hizo su primer ingreso), no se usa el número de la plantilla.
+          if (config._remote !== 'empty') {
+            const waSocial = config.profile?.socialLinks?.find(s => s.platform === 'whatsapp' && s.active);
+            const m = waSocial?.url?.match(/wa\.me\/(\d+)/) || waSocial?.url?.match(/phone=(\d+)/);
+            WA_NUMBER = m ? m[1] : (config.profile?.whatsappNumber || '');
           }
 
           const services = config.services || config.profile?.services;
@@ -355,6 +362,7 @@
         console.warn('Usando servicios estáticos', e);
       }
 
+      applyWaState();
       bindServiceListeners();
 
       if (preselectedService) {
@@ -370,32 +378,53 @@
         });
         btn.className = 'time-slot-btn py-2 text-center rounded-xl text-xs font-mono font-bold border border-emerald-400 bg-emerald-500 text-slate-950 scale-105 shadow-md shadow-emerald-500/20';
         selectedTime = btn.getAttribute('data-time');
-        document.getElementById('selectedTimeLabel').textContent = selectedTime + ' hs';
+        document.getElementById('selectedTimeLabel').textContent = selectedTime + ' hs'; // se traduce solo (PT: "h")
       });
     });
+
+    function applyWaState() {
+      const dest = document.getElementById('waDestination');
+      const btn = document.querySelector('#bookingForm button[type="submit"]');
+      if (WA_NUMBER) {
+        dest.textContent = 'Destino: WhatsApp oficial (+' + WA_NUMBER + ')';
+        if (btn) { btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed'); }
+      } else {
+        dest.className = 'text-[11px] text-center text-amber-300 mt-2.5';
+        dest.innerHTML = '<strong>Reservas aún sin configurar</strong><br>Este BioLink todavía no tiene un número de WhatsApp configurado para recibir reservas. Hablá con quien administra esta página.';
+        if (btn) { btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed'); }
+      }
+    }
+    applyWaState();
 
     // Handle form submit
     document.getElementById('bookingForm').addEventListener('submit', (e) => {
       e.preventDefault();
-      const service = document.querySelector('input[name="service"]:checked')?.value || 'Consulta';
-      const date = dateInput.value;
+      if (!WA_NUMBER) return;
+      const T = (s) => (window.i18n ? i18n.t(s) : s);
+      const serviceValue = document.querySelector('input[name="service"]:checked')?.value || 'Consulta';
+      const service = T(serviceValue);
+      const [y, m, d] = dateInput.value.split('-').map(Number);
+      const date = new Date(y, m - 1, d).toLocaleDateString(window.i18n ? i18n.locale() : 'es-ES', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+      });
+      const hs = (window.i18n && i18n.lang === 'pt') ? 'h' : 'hs';
       const name = document.getElementById('clientName').value.trim();
       const phone = document.getElementById('clientPhone').value.trim();
       const notes = document.getElementById('clientNotes').value.trim();
 
       const lines = [
-        `👋 *¡Hola! Deseo agendar un turno:*`,
+        T('👋 *¡Hola! Deseo agendar un turno:*'),
         ``,
-        `💼 *Servicio:* ${service}`,
-        `📅 *Fecha solicitada:* ${date}`,
-        `⏰ *Horario:* ${selectedTime} hs`,
-        `👤 *Nombre:* ${name}`,
+        `${T('💼 *Servicio:*')} ${service}`,
+        `${T('📅 *Fecha solicitada:*')} ${date}`,
+        `${T('⏰ *Horario:*')} ${selectedTime} ${hs}`,
+        `${T('👤 *Nombre:*')} ${name}`,
       ];
 
-      if (phone) lines.push(`📱 *Teléfono:* ${phone}`);
-      if (notes) lines.push(`📝 *Nota:* ${notes}`);
+      if (phone) lines.push(`${T('📱 *Teléfono:*')} ${phone}`);
+      if (notes) lines.push(`${T('📝 *Nota:*')} ${notes}`);
       lines.push(``);
-      lines.push(`_Enviado desde el sistema de turnos._`);
+      lines.push(T('_Enviado desde el sistema de turnos._'));
 
       const fullMessage = lines.join('\n');
       const waUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(fullMessage)}`;

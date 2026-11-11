@@ -182,3 +182,40 @@ begin
 end $$;
 
 revoke all on function public.create_site(text, text) from public, anon, authenticated;
+
+-- 8) Alta AUTOMÁTICA al crear un usuario en Authentication ----------------
+--   Al crear el usuario se crea su sitio con  site_id = uid del usuario.
+--   Ese uid (Authentication → Users → columna "User UID") es el VITE_SITE_ID del repo.
+--   Compatibilidad: si ya existe un sitio SIN dueño con el nombre del correo
+--   (ej. "thays" para thays@...), el usuario lo toma en vez de crear uno nuevo.
+create or replace function public.handle_new_user_site()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  base text;
+begin
+  base := lower(regexp_replace(split_part(coalesce(new.email, ''), '@', 1), '[^a-zA-Z0-9]+', '-', 'g'));
+  base := trim(both '-' from left(base, 34));
+  if length(base) >= 2 then
+    update public.sites set owner_id = new.id where site_id = base and owner_id is null;
+    if found then
+      return new;
+    end if;
+  end if;
+
+  insert into public.sites (site_id, owner_id)
+  values (new.id::text, new.id)
+  on conflict (site_id) do nothing;
+
+  return new;
+end $$;
+
+revoke all on function public.handle_new_user_site() from public, anon, authenticated;
+
+drop trigger if exists on_auth_user_created_site on auth.users;
+create trigger on_auth_user_created_site
+  after insert on auth.users
+  for each row execute function public.handle_new_user_site();

@@ -129,6 +129,11 @@ export interface ProfileConfig {
   companyBranding?: CompanyBrandingConfig;
   categoryFilters?: CategoryFiltersConfig;
   services?: ServiceItem[];
+  defaultLang?: 'pt' | 'es';
+  // WhatsApp del negocio (solo dígitos con código de país). Lo carga el cliente en su primer ingreso.
+  whatsappNumber?: string;
+  // Mensaje de saludo que se precarga al tocar cualquier botón de WhatsApp (opcional).
+  whatsappGreeting?: string;
 }
 
 export type ThemePresetId = 'elamor' | 'celestial' | 'oasis' | 'midnight' | 'minimal' | 'sunset' | 'custom';

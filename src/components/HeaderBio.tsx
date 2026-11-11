@@ -2,6 +2,7 @@ import React from 'react';
 import { BadgeCheck, MapPin, Share2 } from 'lucide-react';
 import { ProfileConfig, ThemeConfig } from '../types';
 import { IconRenderer } from './IconRenderer';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface HeaderBioProps {
   profile: ProfileConfig;
@@ -16,6 +17,7 @@ export const HeaderBio: React.FC<HeaderBioProps> = ({
   onOpenShare,
   onSocialClick,
 }) => {
+  const { t } = useLanguage();
   return (
     <header className="relative flex flex-col items-center text-center px-4 pt-8 pb-4 w-full max-w-xl mx-auto">
       {/* Share profile top action */}
@@ -23,7 +25,7 @@ export const HeaderBio: React.FC<HeaderBioProps> = ({
         <button
           onClick={onOpenShare}
           className="flex items-center justify-center w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 text-white/80 hover:text-white backdrop-blur-md border border-white/10 transition-all hover:scale-105 active:scale-95 shadow-md"
-          title="Compartir o ver QR"
+          title={t.header.shareTooltip}
         >
           <Share2 className="w-4 h-4" />
         </button>
@@ -59,7 +61,7 @@ export const HeaderBio: React.FC<HeaderBioProps> = ({
         {profile.verified && (
           <div
             className="absolute bottom-1 right-1 p-1 rounded-full bg-slate-950 shadow-lg border border-amber-400/40"
-            title={profile.customTexts?.verifiedBadgeText || 'Cuenta Oficial Verificada'}
+            title={profile.customTexts?.verifiedBadgeText || t.header.verifiedBadge}
           >
             <BadgeCheck className="w-5 h-5 text-amber-400 fill-amber-400/20" />
           </div>

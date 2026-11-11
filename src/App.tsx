@@ -12,7 +12,10 @@ import {
   Layers,
 } from 'lucide-react';
 import { LinkItem, ProfileConfig, ThemeConfig, AnalyticsData } from './types';
-import { storageService } from './services/storage';
+import { storageService, RemoteStatus } from './services/storage';
+import { supabase, isSupabaseConfigured } from './services/supabase';
+import { FirstLoginSetup } from './components/FirstLoginSetup';
+import { getWhatsAppNumber } from './utils/whatsapp';
 import { HeaderBio } from './components/HeaderBio';
 import { FeaturedCard } from './components/FeaturedCard';
 import { LinkButton } from './components/LinkButton';
@@ -22,8 +25,21 @@ import { VideoPlayerModal } from './components/VideoPlayerModal';
 import { AppointmentModal } from './components/AppointmentModal';
 import { PWAInstallButton } from './components/PWAInstallButton';
 import { OfflineIndicator } from './components/OfflineIndicator';
+import { LanguageSwitch } from './components/LanguageSwitch';
+import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
+import { Lang } from './i18n/translations';
 
 export default function App() {
+  const [defaultLang, setDefaultLang] = useState<Lang>(storageService.getProfile().defaultLang || 'pt');
+  return (
+    <LanguageProvider defaultLang={defaultLang}>
+      <AppContent onDefaultLang={setDefaultLang} />
+    </LanguageProvider>
+  );
+}
+
+function AppContent({ onDefaultLang }: { onDefaultLang: (l: Lang) => void }) {
+  const { t } = useLanguage();
   const [links, setLinks] = useState<LinkItem[]>([]);
   const [profile, setProfile] = useState<ProfileConfig>(storageService.getProfile());
   const [theme, setTheme] = useState<ThemeConfig>(storageService.getTheme());
@@ -35,18 +51,26 @@ export default function App() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
 
+  // Primer ingreso del cliente: sesión + estado de la config publicada
+  const [hasSession, setHasSession] = useState(false);
+  const [remoteStatus, setRemoteStatus] = useState<RemoteStatus>('unknown');
+  const [setupDismissed, setSetupDismissed] = useState(false);
+
   // Filter category
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   // Compute WhatsApp number for appointments from social links or default
   const whatsappBookingNumber = React.useMemo(() => {
-    const wa = profile.socialLinks?.find((s) => s.platform === 'whatsapp' && s.active && s.url);
-    if (wa?.url) {
-      const match = wa.url.match(/wa\.me\/(\d+)/i) || wa.url.match(/(\d{9,15})/);
-      if (match && match[1]) return match[1];
-    }
-    return '5548999053493';
-  }, [profile.socialLinks]);
+    // Sitio nuevo (fila vacía en Supabase): lo que se ve es la plantilla del build, no del cliente.
+    if (remoteStatus === 'empty') return '';
+    // Sin WhatsApp configurado: vacío (el modal de reservas avisa en vez de usar un número ajeno)
+    return getWhatsAppNumber(profile);
+  }, [profile, remoteStatus]);
+
+  useEffect(() => {
+    onDefaultLang(profile.defaultLang || 'pt');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile.defaultLang]);
 
   // Load and record visit once
   useEffect(() => {
@@ -62,17 +86,38 @@ export default function App() {
 
     // Configuración publicada en Supabase: es la que ven todos los visitantes
     storageService.fetchRemoteConfig().then((remote) => {
+      setRemoteStatus(storageService.getRemoteStatus());
       if (!remote) return;
       if (remote.links) setLinks(remote.links);
       if (remote.profile) setProfile(remote.profile);
       if (remote.theme) setTheme(remote.theme);
     });
 
+    if (supabase) {
+      storageService.getSession().then((s) => setHasSession(!!s));
+    }
+
     // Open booking modal if hash is #turnos
     if (typeof window !== 'undefined' && (window.location.hash === '#turnos' || window.location.hash === '#booking')) {
       setIsBookingOpen(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (!supabase) return;
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => setHasSession(!!session));
+    return () => data.subscription.unsubscribe();
+  }, []);
+
+  // Asistente de primer ingreso: sesión iniciada, config ya consultada y sin WhatsApp guardado
+  const legacyNumber = remoteStatus === 'ready' ? getWhatsAppNumber(profile) : '';
+  const showFirstLoginSetup =
+    isSupabaseConfigured &&
+    isAdminOpen && // solo dentro del panel "Configurar": el visitante nunca lo ve
+    hasSession &&
+    (remoteStatus === 'ready' || remoteStatus === 'empty') &&
+    !profile.whatsappNumber &&
+    !(setupDismissed && legacyNumber);
 
   // Dynamically sync Document Title, Meta tags, PWA icon & favicon when profile changes
   useEffect(() => {
@@ -175,10 +220,10 @@ export default function App() {
   ];
 
   const allDefinedCategories = [
-    { id: 'all', label: profile.customTexts?.categoryAll || 'Todos' },
-    { id: 'community', label: profile.customTexts?.categoryCommunity || 'Comunidad' },
-    { id: 'multimedia', label: profile.customTexts?.categoryMultimedia || 'Transmisiones' },
-    { id: 'donations', label: profile.customTexts?.categoryDonations || 'Donaciones' },
+    { id: 'all', label: profile.customTexts?.categoryAll || t.categories.all },
+    { id: 'community', label: profile.customTexts?.categoryCommunity || t.categories.community },
+    { id: 'multimedia', label: profile.customTexts?.categoryMultimedia || t.categories.multimedia },
+    { id: 'donations', label: profile.customTexts?.categoryDonations || t.categories.donations },
   ];
 
   // Only keep categories that are explicitly activated in settings
@@ -233,11 +278,12 @@ export default function App() {
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
           </span>
           <span className="text-[11px] font-mono text-white/70">
-            {analytics.totalClicks.toLocaleString()} {profile.customTexts?.topBarLiveBadge || 'clics en vivo'}
+            {analytics.totalClicks.toLocaleString()} {profile.customTexts?.topBarLiveBadge || t.topBar.liveBadge}
           </span>
         </div>
 
         <div className="flex items-center gap-2">
+          <LanguageSwitch />
           {/* PWA Install Button */}
           <PWAInstallButton variant="header" />
 
@@ -245,10 +291,10 @@ export default function App() {
           <button
             onClick={() => setIsAdminOpen(true)}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 backdrop-blur-md transition-all hover:scale-105 active:scale-95 shadow-sm cursor-pointer"
-            title="Abrir Panel de Configuración y Seguridad"
+            title={t.topBar.configureTooltip}
           >
             <Settings className="w-3.5 h-3.5 animate-spin-slow" />
-            <span>{profile.customTexts?.topBarButtonText || 'Configurar'}</span>
+            <span>{profile.customTexts?.topBarButtonText || t.topBar.configure}</span>
           </button>
         </div>
       </div>
@@ -307,7 +353,7 @@ export default function App() {
         >
           {filteredLinks.length === 0 ? (
             <div className="p-8 text-center rounded-2xl bg-black/20 border border-white/10 text-white/60 text-xs">
-              {profile.customTexts?.emptyStateText || 'No hay enlaces en esta categoría.'}
+              {profile.customTexts?.emptyStateText || t.links.emptyState}
             </div>
           ) : (
             filteredLinks.map((link) => (
@@ -331,7 +377,7 @@ export default function App() {
             className="flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold bg-white/10 hover:bg-white/15 text-white/90 hover:text-white backdrop-blur-md border border-white/15 transition-all hover:scale-105 active:scale-95 shadow-md cursor-pointer"
           >
             <QrCode className="w-4 h-4 text-amber-400" />
-            <span>{profile.customTexts?.shareModalButtonText || 'Ver Código QR & Compartir'}</span>
+            <span>{profile.customTexts?.shareModalButtonText || t.main.shareButton}</span>
           </button>
         </div>
       </main>
@@ -345,7 +391,7 @@ export default function App() {
           {profile.companyBranding?.enabled !== false && (
             <div className="pt-1 pb-1 flex flex-col items-center">
               <span className="text-[10px] uppercase tracking-wider text-slate-400 font-medium mb-2 opacity-80">
-                {profile.companyBranding?.label || 'Desarrollado & Diseñado por'}
+                {profile.companyBranding?.label || t.footer.developedBy}
               </span>
               <a
                 href={profile.companyBranding?.websiteUrl || 'https://lavisualmk.alastecno.com'}
@@ -355,7 +401,7 @@ export default function App() {
                   storageService.recordClick('company-logo', profile.companyBranding?.name || 'LA VISUAL MARKETING');
                 }}
                 className="group relative inline-flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-400/40 backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-amber-500/10 cursor-pointer"
-                title={`Visitar ${profile.companyBranding?.name || 'LA VISUAL MARKETING'}`}
+                title={`${t.footer.visit} ${profile.companyBranding?.name || 'LA VISUAL MARKETING'}`}
               >
                 <div className="w-10 h-10 rounded-xl overflow-hidden border border-amber-400/30 shadow-md group-hover:border-amber-400/70 group-hover:shadow-amber-500/20 transition-all shrink-0 bg-white/10 flex items-center justify-center p-0.5">
                   <img
@@ -386,12 +432,12 @@ export default function App() {
               className="hover:text-amber-400 transition-colors flex items-center gap-1 cursor-pointer"
             >
               <Settings className="w-3 h-3" />
-              <span>Panel Administrador</span>
+              <span>{t.footer.adminPanel}</span>
             </button>
             <span>•</span>
             <span className="flex items-center gap-1 font-mono">
               <Activity className="w-3 h-3 text-emerald-400" />
-              <span>{analytics.totalClicks} clics totales</span>
+              <span>{analytics.totalClicks} {t.footer.totalClicks}</span>
             </span>
           </div>
         </div>
@@ -425,7 +471,7 @@ export default function App() {
         isOpen={isBookingOpen}
         onClose={() => setIsBookingOpen(false)}
         whatsappNumber={whatsappBookingNumber}
-        brandName={profile.name || 'Atención al Cliente'}
+        brandName={profile.name || t.booking.brandNameFallback}
         services={profile.services}
       />
 
@@ -439,6 +485,20 @@ export default function App() {
           subtitle={profile.featuredMedia.subtitle}
           tag={profile.featuredMedia.tag}
           brandName={profile.name}
+        />
+      )}
+
+      {showFirstLoginSetup && (
+        <FirstLoginSetup
+          profile={profile}
+          links={links}
+          initialNumber={legacyNumber}
+          onDone={(p, l) => {
+            setProfile(p);
+            setLinks(l);
+            setRemoteStatus('ready');
+          }}
+          onLater={legacyNumber ? () => setSetupDismissed(true) : undefined}
         />
       )}
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, ExternalLink, Sparkles } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 import { extractYouTubeId, getYouTubeEmbedUrl } from '../utils/youtube';
 
 interface VideoPlayerModalProps {
@@ -21,6 +22,7 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
   tag,
   brandName,
 }) => {
+  const { t } = useLanguage();
   if (!isOpen) return null;
 
   const youtubeId = extractYouTubeId(videoUrl);
@@ -46,10 +48,10 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-750 rounded-xl transition-colors border border-slate-700"
-              title="Abrir en YouTube"
+              title={t.video.openInYoutube}
             >
               <ExternalLink className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Ver en YouTube</span>
+              <span className="hidden sm:inline">{t.video.openInYoutubeShort}</span>
             </a>
             <button
               onClick={onClose}
@@ -73,7 +75,7 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
           ) : (
             <div className="text-center p-6 space-y-3">
               <p className="text-sm text-slate-300">
-                Este video no es un enlace embebible de YouTube directo.
+                {t.video.notEmbeddable}
               </p>
               <a
                 href={videoUrl}
@@ -82,7 +84,7 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400"
               >
                 <ExternalLink className="w-4 h-4" />
-                <span>Abrir enlace del video ({videoUrl})</span>
+                <span>{t.video.openLink(videoUrl)}</span>
               </a>
             </div>
           )}
@@ -92,7 +94,7 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
         {subtitle && (
           <div className="p-4 bg-slate-950/80 border-t border-slate-800/80 text-xs text-slate-400 flex items-center justify-between">
             <span>{subtitle}</span>
-            <span className="text-[11px] text-amber-400/80 font-mono">{brandName || 'BioLink'} • Transmisión</span>
+            <span className="text-[11px] text-amber-400/80 font-mono">{brandName || 'BioLink'} • {t.video.liveTag}</span>
           </div>
         )}
       </div>

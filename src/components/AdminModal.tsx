@@ -72,6 +72,7 @@ import {
   ServiceItem,
 } from '../types';
 import { storageService } from '../services/storage';
+import { WhatsAppNumberCard } from './WhatsAppNumberCard';
 import { supabase, SITE_ID, isSupabaseConfigured } from '../services/supabase';
 import { AVAILABLE_ICONS, IconRenderer } from './IconRenderer';
 import { THEME_PRESETS, DEFAULT_SERVICES } from '../data/defaultData';
@@ -1100,6 +1101,14 @@ export const AdminModal: React.FC<AdminModalProps> = ({
           {/* ================= TAB: REDES SOCIALES REALES ================= */}
           {activeTab === 'social' && (
             <div className="space-y-6 animate-fade-in">
+              <WhatsAppNumberCard
+                profile={profile}
+                links={links}
+                onUpdateProfile={onUpdateProfile}
+                onUpdateLinks={onUpdateLinks}
+                notify={showNotification}
+              />
+
               <div className="flex items-center justify-between flex-wrap gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center">

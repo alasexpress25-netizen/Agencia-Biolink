@@ -43,7 +43,7 @@
           <span class="sm:hidden">Turnos</span>
         </a>
 
-        <a href="https://wa.me/5548999053493" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 transition-colors">
+        <a href="https://wa.me/" target="_blank" rel="noopener noreferrer" class="hidden inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 transition-colors">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
           <span>WhatsApp</span>
         </a>
@@ -372,12 +372,13 @@
         <span>•</span>
         <a href="turnos.html" class="hover:text-amber-400 transition-colors">Agendar Turno</a>
         <span>•</span>
-        <a href="https://wa.me/5548999053493" target="_blank" class="text-emerald-400 hover:text-emerald-300">WhatsApp Oficial</a>
+        <a href="https://wa.me/" target="_blank" class="hidden text-emerald-400 hover:text-emerald-300">WhatsApp Oficial</a>
       </div>
     </div>
   </footer>
 
   <!-- Script to dynamically load customized services if available from server -->
+  <script src="i18n-pages.js"></script>
   <script>
     // Lee la config: primero ./clientConfig.json (valores por defecto del build) y luego,
     // si hay Supabase, la versión publicada por el cliente (tiene prioridad).
@@ -402,6 +403,9 @@
             const remote = rows[0] && rows[0].config;
             if (remote && Object.keys(remote).length > 0) {
               base = Object.assign({}, base, remote);
+              base._remote = 'ready';
+            } else {
+              base._remote = 'empty'; // cliente nuevo: la plantilla del build no es su configuración
             }
           }
         } catch (e) { /* se queda con la config del build */ }
@@ -414,8 +418,10 @@
         if (!config) return;
         const waSocial = config.profile?.socialLinks?.find(s => s.platform === 'whatsapp' && s.active);
         const waM = waSocial?.url?.match(/wa\.me\/(\d+)/) || waSocial?.url?.match(/phone=(\d+)/);
-        const waDigits = waM ? waM[1] : '';
-        if (waDigits) document.querySelectorAll('a[href^="https://wa.me/"]').forEach(a => { a.href = 'https://wa.me/' + waDigits; });
+        // Cliente nuevo (fila vacía): no se usa el número de la plantilla
+        const waDigits = config._remote === 'empty' ? '' : (waM ? waM[1] : (config.profile?.whatsappNumber || ''));
+        if (config.profile && config.profile.defaultLang && window.i18n) i18n.setDefault(config.profile.defaultLang);
+        if (waDigits) document.querySelectorAll('a[href^="https://wa.me/"]').forEach(a => { a.href = 'https://wa.me/' + waDigits + (config.profile?.whatsappGreeting ? '?text=' + encodeURIComponent(config.profile.whatsappGreeting) : ''); a.classList.remove('hidden'); });
         const services = config.services || config.profile?.services;
         if (!services || !Array.isArray(services) || services.length === 0) return;
 

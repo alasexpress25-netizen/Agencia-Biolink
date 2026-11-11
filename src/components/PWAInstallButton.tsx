@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Download, Smartphone, X, Share2, PlusSquare } from 'lucide-react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface PWAInstallButtonProps {
   variant?: 'pill' | 'header' | 'card';
@@ -12,7 +13,12 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({
   className = '',
 }) => {
   const { isInstallable, isInstalled, isIOS, install } = usePWAInstall();
+  const { t } = useLanguage();
   const [showIOSGuide, setShowIOSGuide] = useState(false);
+  const boldLead = (s: string) => {
+    const i = s.indexOf(':');
+    return i < 0 ? s : <><strong>{s.slice(0, i + 1)}</strong>{s.slice(i + 1)}</>;
+  };
 
   // If already running as an installed PWA on the home screen, hide the button
   if (isInstalled) {
@@ -37,10 +43,10 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({
         <button
           onClick={handleClick}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 backdrop-blur-md transition-all hover:scale-105 active:scale-95 shadow-sm cursor-pointer ${className}`}
-          title="Instalar como App en tu teléfono o PC"
+          title={t.pwa.headerTooltip}
         >
           <Download className="w-3.5 h-3.5" />
-          <span>Instalar App</span>
+          <span>{t.pwa.headerButton}</span>
         </button>
       ) : variant === 'card' ? (
         <div
@@ -52,12 +58,12 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({
               <Smartphone className="w-5 h-5" />
             </div>
             <div>
-              <div className="font-bold text-xs sm:text-sm text-white">Instalar Aplicación en tu Pantalla</div>
-              <div className="text-[11px] text-slate-400">Accede rápido sin abrir el navegador • Funciona offline</div>
+              <div className="font-bold text-xs sm:text-sm text-white">{t.pwa.cardTitle}</div>
+              <div className="text-[11px] text-slate-400">{t.pwa.cardSubtitle}</div>
             </div>
           </div>
           <span className="px-3 py-1 text-xs font-bold rounded-lg bg-amber-500 text-slate-950 shrink-0">
-            Instalar
+            {t.pwa.cardButton}
           </span>
         </div>
       ) : (
@@ -66,7 +72,7 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({
           className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 hover:text-white backdrop-blur-md border border-emerald-500/30 transition-all hover:scale-105 active:scale-95 shadow-md cursor-pointer ${className}`}
         >
           <Download className="w-4 h-4 text-emerald-400" />
-          <span>Instalar en tu Celular</span>
+          <span>{t.pwa.pillButton}</span>
         </button>
       )}
 
@@ -86,10 +92,10 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({
             </div>
 
             <h3 className="text-lg font-bold text-white mb-1">
-              Instalar en tu Dispositivo
+              {t.pwa.guideTitle}
             </h3>
             <p className="text-xs text-slate-400 mb-4">
-              Agrega esta página a tu pantalla de inicio para abrirla como una aplicación nativa.
+              {t.pwa.guideSubtitle}
             </p>
 
             <div className="p-4 bg-slate-950/80 rounded-2xl border border-slate-800 text-left space-y-3 text-xs">
@@ -98,7 +104,7 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({
                   <Share2 className="w-4 h-4" />
                 </div>
                 <div>
-                  <strong>Paso 1:</strong> Pulsa el botón <strong>Compartir</strong> (o el menú de opciones de tu navegador).
+                  {boldLead(t.pwa.step1)}
                 </div>
               </div>
 
@@ -107,7 +113,7 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({
                   <PlusSquare className="w-4 h-4" />
                 </div>
                 <div>
-                  <strong>Paso 2:</strong> Desplázate hacia abajo y selecciona <strong>&quot;Agregar a la pantalla de inicio&quot;</strong>.
+                  {boldLead(t.pwa.step2)}
                 </div>
               </div>
             </div>
@@ -116,7 +122,7 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({
               onClick={() => setShowIOSGuide(false)}
               className="mt-5 w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 hover:bg-amber-400 transition-colors shadow-md cursor-pointer"
             >
-              ¡Entendido!
+              {t.pwa.gotIt}
             </button>
           </div>
         </div>

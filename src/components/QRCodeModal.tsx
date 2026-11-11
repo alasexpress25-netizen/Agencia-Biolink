@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Copy, Check, Share2, Download, ExternalLink } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface QRCodeModalProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface QRCodeModalProps {
 }
 
 export const QRCodeModal: React.FC<QRCodeModalProps> = ({ isOpen, onClose, url, title }) => {
+  const { t } = useLanguage();
   const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;
@@ -32,7 +34,7 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({ isOpen, onClose, url, 
       try {
         await navigator.share({
           title,
-          text: `Visita ${title} en:`,
+          text: t.qr.shareText(title),
           url,
         });
       } catch {
@@ -50,7 +52,7 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({ isOpen, onClose, url, 
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-full bg-slate-800/60 hover:bg-slate-800 transition-colors"
-          aria-label="Cerrar"
+          aria-label={t.qr.close}
         >
           <X className="w-5 h-5" />
         </button>
@@ -59,16 +61,16 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({ isOpen, onClose, url, 
           <Share2 className="w-6 h-6" />
         </div>
 
-        <h3 className="text-xl font-bold text-white mb-1">Compartir Perfil</h3>
+        <h3 className="text-xl font-bold text-white mb-1">{t.qr.title}</h3>
         <p className="text-xs text-slate-400 mb-5">
-          Escanea el código QR con cualquier teléfono o copia el enlace directo
+          {t.qr.subtitle}
         </p>
 
         {/* QR Code Frame */}
         <div className="p-3 bg-white rounded-2xl shadow-inner mx-auto inline-block border-4 border-amber-500/30">
           <img
             src={qrImageUrl}
-            alt="Código QR del perfil"
+            alt={t.qr.title}
             className="w-48 h-48 sm:w-56 sm:h-56 object-contain"
             loading="eager"
           />
@@ -85,12 +87,12 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({ isOpen, onClose, url, 
             {copied ? (
               <>
                 <Check className="w-3.5 h-3.5 text-emerald-950" />
-                <span>¡Copiado!</span>
+                <span>{t.qr.copied}</span>
               </>
             ) : (
               <>
                 <Copy className="w-3.5 h-3.5" />
-                <span>Copiar</span>
+                <span>{t.qr.copy}</span>
               </>
             )}
           </button>
@@ -103,7 +105,7 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({ isOpen, onClose, url, 
             className="flex items-center justify-center gap-2 py-2.5 px-3 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-white transition-colors border border-slate-700"
           >
             <Share2 className="w-4 h-4 text-amber-400" />
-            Compartir
+            {t.qr.share}
           </button>
 
           <a
@@ -114,7 +116,7 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({ isOpen, onClose, url, 
             className="flex items-center justify-center gap-2 py-2.5 px-3 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-700 text-white transition-colors border border-slate-700"
           >
             <Download className="w-4 h-4 text-emerald-400" />
-            Descargar QR
+            {t.qr.download}
           </a>
         </div>
       </div>

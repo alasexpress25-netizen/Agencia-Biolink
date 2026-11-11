@@ -12,6 +12,11 @@ const STORAGE_KEYS = {
 let syncTimeout: ReturnType<typeof setTimeout> | null = null;
 let applyingRemote = false; // evita re-guardar lo que acabamos de bajar del servidor
 
+// Estado de la última lectura de la config publicada:
+//  'ready' = el cliente ya guardó su config · 'empty' = fila sin config (cliente nuevo) · 'error' = falló la lectura
+export type RemoteStatus = 'unknown' | 'ready' | 'empty' | 'error';
+let remoteStatus: RemoteStatus = 'unknown';
+
 export type SyncStatus = 'saving' | 'saved' | 'error';
 function emitSync(status: SyncStatus, message?: string) {
   if (typeof window === 'undefined') return;
@@ -270,7 +275,15 @@ export const storageService = {
     if (!supabase) return null;
     try {
       const { data, error } = await supabase.from('sites').select('config').eq('site_id', SITE_ID).maybeSingle();
-      if (error || !data?.config || Object.keys(data.config).length === 0) return null;
+      if (error) {
+        remoteStatus = 'error';
+        return null;
+      }
+      if (!data?.config || Object.keys(data.config).length === 0) {
+        remoteStatus = 'empty';
+        return null;
+      }
+      remoteStatus = 'ready';
       const cfg = data.config as any;
       applyingRemote = true;
       try {
@@ -286,8 +299,13 @@ export const storageService = {
       }
       return { profile: cfg.profile ? this.getProfile() : undefined, links: Array.isArray(cfg.links) ? this.getLinks() : undefined, theme: cfg.theme ? this.getTheme() : undefined };
     } catch {
+      remoteStatus = 'error';
       return null;
     }
+  },
+
+  getRemoteStatus(): RemoteStatus {
+    return remoteStatus;
   },
 
   // Guarda la configuración en Supabase (requiere sesión del dueño; RLS lo comprueba en el servidor)

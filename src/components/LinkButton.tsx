@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ExternalLink, Sparkles } from 'lucide-react';
 import { LinkItem, ThemeConfig } from '../types';
 import { IconRenderer } from './IconRenderer';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface LinkButtonProps {
   link: LinkItem;
@@ -25,6 +26,7 @@ export const LinkButton: React.FC<LinkButtonProps> = ({
   onClick,
   showClickCount = false,
 }) => {
+  const { t } = useLanguage();
   const [isClicked, setIsClicked] = useState(false);
   const [tilt, setTilt] = useState<{ x: number; y: number; active: boolean }>({
     x: 0,
@@ -342,7 +344,7 @@ export const LinkButton: React.FC<LinkButtonProps> = ({
       <div className="flex items-center gap-2 shrink-0 ml-2 z-10">
         {showClickCount && (
           <span className="hidden sm:inline-block px-2 py-0.5 text-[11px] font-mono rounded-full bg-black/30 border border-white/10 opacity-70">
-            {link.clicks || 0} clics
+            {link.clicks || 0} {t.links.clicksSuffix}
           </span>
         )}
         <div className="flex items-center justify-center w-7 h-7 rounded-full bg-black/20 group-hover:bg-white/20 transition-colors opacity-70 group-hover:opacity-100">

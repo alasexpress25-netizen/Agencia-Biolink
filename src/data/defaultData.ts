@@ -1,4 +1,4 @@
-import { LinkItem, ProfileConfig, ThemeConfig, AnalyticsData, ThemePresetId } from '../types';
+import { LinkItem, ProfileConfig, ThemeConfig, AnalyticsData, ThemePresetId, ServiceItem } from '../types';
 import clientConfig from './clientConfig.json';
 
 export const DEFAULT_PROFILE: ProfileConfig = clientConfig.profile as ProfileConfig;
@@ -132,3 +132,5 @@ export const INITIAL_ANALYTICS: AnalyticsData = (clientConfig as any).analytics 
     tablet: 0,
   },
 };
+
+export const DEFAULT_SERVICES: ServiceItem[] = (clientConfig as any).services || [];

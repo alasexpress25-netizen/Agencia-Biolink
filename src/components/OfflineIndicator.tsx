@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { WifiOff } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export function useOnlineStatus() {
   const [isOnline, setIsOnline] = useState(
@@ -24,13 +25,14 @@ export function useOnlineStatus() {
 
 export const OfflineIndicator: React.FC = () => {
   const isOnline = useOnlineStatus();
+  const { t } = useLanguage();
 
   if (isOnline) return null;
 
   return (
     <div className="fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-xl bg-amber-600/95 backdrop-blur-md px-3.5 py-2 text-xs font-semibold text-slate-950 shadow-2xl border border-amber-400/40 animate-bounce">
       <WifiOff className="w-4 h-4 text-slate-950" />
-      <span>Modo sin conexión — Mostrando contenido en caché</span>
+      <span>{t.offline}</span>
     </div>
   );
 };
