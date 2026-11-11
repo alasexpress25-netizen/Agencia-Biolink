@@ -114,62 +114,21 @@ export const THEME_PRESETS: Record<ThemePresetId, ThemeConfig> = {
   },
 };
 
-export const INITIAL_ANALYTICS: AnalyticsData = {
-  totalVisits: 5840,
-  totalClicks: 4669,
-  recentEvents: [
-    {
-      id: 'ev-1',
-      linkId: 'link-whatsapp-group',
-      linkTitle: 'Comunidad Oficial en WhatsApp',
-      timestamp: Date.now() - 1000 * 60 * 3, // 3 min ago
-      device: 'mobile',
-      referrer: 'WhatsApp',
-    },
-    {
-      id: 'ev-2',
-      linkId: 'link-youtube-live',
-      linkTitle: 'Transmisión en Vivo Domingos',
-      timestamp: Date.now() - 1000 * 60 * 12,
-      device: 'mobile',
-      referrer: 'Instagram',
-    },
-    {
-      id: 'ev-3',
-      linkId: 'link-donations',
-      linkTitle: 'Siembra y Donaciones Solidarias',
-      timestamp: Date.now() - 1000 * 60 * 25,
-      device: 'desktop',
-      referrer: 'Directo',
-    },
-    {
-      id: 'ev-4',
-      linkId: 'link-prayer',
-      linkTitle: 'Peticiones de Oración y Acompañamiento',
-      timestamp: Date.now() - 1000 * 60 * 42,
-      device: 'mobile',
-      referrer: 'TikTok',
-    },
-    {
-      id: 'ev-5',
-      linkId: 'link-podcast',
-      linkTitle: 'Podcast: El Amor Traspasa en Spotify',
-      timestamp: Date.now() - 1000 * 60 * 68,
-      device: 'mobile',
-      referrer: 'Instagram',
-    },
-  ],
+export const INITIAL_ANALYTICS: AnalyticsData = (clientConfig as any).analytics || {
+  totalVisits: 0,
+  totalClicks: 0,
+  recentEvents: [],
   referrerCounts: {
-    WhatsApp: 1840,
-    Instagram: 1420,
-    Directo: 780,
-    TikTok: 420,
-    YouTube: 154,
-    Google: 55,
+    WhatsApp: 0,
+    Instagram: 0,
+    Directo: 0,
+    TikTok: 0,
+    YouTube: 0,
+    Google: 0,
   },
   deviceCounts: {
-    mobile: 3820,
-    desktop: 710,
-    tablet: 139,
+    mobile: 0,
+    desktop: 0,
+    tablet: 0,
   },
 };

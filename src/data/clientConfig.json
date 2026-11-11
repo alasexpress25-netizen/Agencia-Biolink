@@ -263,5 +263,48 @@
     "buttonSpacing": "normal",
     "buttonGapPx": 20
   },
-  "password": "admin123"
+  "password": "admin123",
+  "analytics": {
+    "totalVisits": 5840,
+    "totalClicks": 5389,
+    "recentEvents": [
+      {
+        "id": "ev-1",
+        "linkId": "link-whatsapp-group",
+        "linkTitle": "Comunidad Oficial en WhatsApp",
+        "timestamp": 1741700000000,
+        "device": "mobile",
+        "referrer": "WhatsApp"
+      },
+      {
+        "id": "ev-2",
+        "linkId": "link-youtube-live",
+        "linkTitle": "Transmisión en Vivo Domingos",
+        "timestamp": 1741699000000,
+        "device": "mobile",
+        "referrer": "Instagram"
+      },
+      {
+        "id": "ev-3",
+        "linkId": "link-donations",
+        "linkTitle": "Siembra y Donaciones Solidarias",
+        "timestamp": 1741698000000,
+        "device": "desktop",
+        "referrer": "Directo"
+      }
+    ],
+    "referrerCounts": {
+      "WhatsApp": 1840,
+      "Instagram": 1420,
+      "Directo": 780,
+      "TikTok": 420,
+      "YouTube": 154,
+      "Google": 55
+    },
+    "deviceCounts": {
+      "mobile": 3820,
+      "desktop": 710,
+      "tablet": 139
+    }
+  }
 }

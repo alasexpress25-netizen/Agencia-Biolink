@@ -161,6 +161,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   const [pwaUploadFile, setPwaUploadFile] = useState<File | null>(null);
   const [pwaUploadPreview, setPwaUploadPreview] = useState<string | null>(null);
   const [copiedConfig, setCopiedConfig] = useState(false);
+  const [isSavingToDisk, setIsSavingToDisk] = useState(false);
 
   const handleDownloadPwaIcons = async () => {
     try {
@@ -308,6 +309,17 @@ export const AdminModal: React.FC<AdminModalProps> = ({
       setTimeout(() => setCopiedConfig(false), 2500);
     } catch {
       showNotification('Error al copiar al portapapeles');
+    }
+  };
+
+  const handleDirectSaveToDisk = async () => {
+    setIsSavingToDisk(true);
+    const success = await storageService.saveToDiskServer();
+    setIsSavingToDisk(false);
+    if (success) {
+      showNotification('✅ ¡Grabado con éxito en src/data/clientConfig.json (botones, enlaces y clics)!');
+    } else {
+      showNotification('Aviso: no se pudo escribir por servidor local. Usa "Descargar clientConfig.json".');
     }
   };
 
@@ -4009,33 +4021,61 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                   <p>
                     Al hacer commit y push a GitHub, el título de la pestaña, el manifest PWA, los enlaces, colores y fotos se compilarán fijos para todos los visitantes del mundo.
                   </p>
+                  <div className="pt-1 flex items-center gap-3 text-[10px] text-amber-200/90 font-mono">
+                    <span>📊 Clics: {analytics.totalClicks}</span>
+                    <span>•</span>
+                    <span>🔗 Botones: {links.length}</span>
+                    <span>•</span>
+                    <span>👁️ Visitas: {analytics.totalVisits}</span>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div className="space-y-2 pt-1">
                   <button
-                    onClick={handleDownloadClientConfig}
-                    className="flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-slate-950 shadow-md shadow-amber-500/20 transition-all active:scale-95 cursor-pointer"
+                    type="button"
+                    onClick={handleDirectSaveToDisk}
+                    disabled={isSavingToDisk}
+                    className="w-full py-3 px-4 text-xs font-bold rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 shadow-lg shadow-emerald-500/20 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                   >
-                    <Download className="w-4 h-4 text-slate-950" />
-                    <span>📥 Descargar clientConfig.json</span>
-                  </button>
-
-                  <button
-                    onClick={handleCopyClientConfig}
-                    className="flex items-center justify-center gap-2 py-3 px-4 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-white border border-slate-700 transition-colors cursor-pointer"
-                  >
-                    {copiedConfig ? (
+                    {isSavingToDisk ? (
                       <>
-                        <Check className="w-4 h-4 text-emerald-400" />
-                        <span className="text-emerald-400 font-bold">¡Copiado al portapapeles!</span>
+                        <RefreshCw className="w-4 h-4 animate-spin text-slate-950" />
+                        <span>Grabando botones, clics y configuración en el archivo...</span>
                       </>
                     ) : (
                       <>
-                        <Copy className="w-4 h-4 text-amber-400" />
-                        <span>📋 Copiar Código JSON</span>
+                        <Check className="w-4 h-4 text-slate-950" />
+                        <span>💾 Grabar Cambios Directamente en clientConfig.json (1 Clic)</span>
                       </>
                     )}
                   </button>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <button
+                      onClick={handleDownloadClientConfig}
+                      className="flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-bold rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40 transition-all active:scale-95 cursor-pointer"
+                    >
+                      <Download className="w-4 h-4 text-amber-400" />
+                      <span>📥 Descargar Archivo JSON</span>
+                    </button>
+
+                    <button
+                      onClick={handleCopyClientConfig}
+                      className="flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-white border border-slate-700 transition-colors cursor-pointer"
+                    >
+                      {copiedConfig ? (
+                        <>
+                          <Check className="w-4 h-4 text-emerald-400" />
+                          <span className="text-emerald-400 font-bold">¡Copiado!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-4 h-4 text-amber-400" />
+                          <span>📋 Copiar Código JSON</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
 

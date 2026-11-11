@@ -11,6 +11,16 @@ const STORAGE_KEYS = {
 
 const DEFAULT_PASSWORD = 'admin123';
 
+let syncTimeout: ReturnType<typeof setTimeout> | null = null;
+
+function triggerAutoSyncToDisk(service: typeof storageService) {
+  if (typeof window === 'undefined') return;
+  if (syncTimeout) clearTimeout(syncTimeout);
+  syncTimeout = setTimeout(() => {
+    service.saveToDiskServer().catch(() => {});
+  }, 350);
+}
+
 export const storageService = {
   getLinks(): LinkItem[] {
     try {
@@ -30,6 +40,7 @@ export const storageService = {
   saveLinks(links: LinkItem[]): void {
     try {
       localStorage.setItem(STORAGE_KEYS.LINKS, JSON.stringify(links));
+      triggerAutoSyncToDisk(this);
     } catch (e) {
       console.error('Error saving links', e);
     }
@@ -66,6 +77,7 @@ export const storageService = {
   saveProfile(profile: ProfileConfig): void {
     try {
       localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(profile));
+      triggerAutoSyncToDisk(this);
     } catch (e) {
       console.error('Error saving profile', e);
     }
@@ -92,6 +104,7 @@ export const storageService = {
   saveTheme(theme: ThemeConfig): void {
     try {
       localStorage.setItem(STORAGE_KEYS.THEME, JSON.stringify(theme));
+      triggerAutoSyncToDisk(this);
     } catch (e) {
       console.error('Error saving theme', e);
     }
@@ -112,6 +125,7 @@ export const storageService = {
   savePassword(newPassword: string): void {
     try {
       localStorage.setItem(STORAGE_KEYS.PASSWORD, newPassword);
+      triggerAutoSyncToDisk(this);
     } catch (e) {
       console.error('Error saving password', e);
     }
@@ -137,6 +151,7 @@ export const storageService = {
   saveAnalytics(data: AnalyticsData): void {
     try {
       localStorage.setItem(STORAGE_KEYS.ANALYTICS, JSON.stringify(data));
+      triggerAutoSyncToDisk(this);
     } catch (e) {
       console.error('Error saving analytics', e);
     }
@@ -258,8 +273,29 @@ export const storageService = {
       links: this.getLinks(),
       theme: this.getTheme(),
       password: this.getPassword(),
+      analytics: this.getAnalytics(),
     };
     return JSON.stringify(data, null, 2);
+  },
+
+  async saveToDiskServer(): Promise<boolean> {
+    try {
+      const fullData = {
+        profile: this.getProfile(),
+        links: this.getLinks(),
+        theme: this.getTheme(),
+        password: this.getPassword(),
+        analytics: this.getAnalytics(),
+      };
+      const res = await fetch('/api/save-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fullData),
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
   },
 
   exportFullBackup(): string {
