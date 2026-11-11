@@ -1,0 +1,267 @@
+{
+  "profile": {
+    "name": "El Amor Traspasa",
+    "appName": "El Amor Traspasa",
+    "browserTabTitle": "BioLink - El Amor Traspasa",
+    "metaDescription": "Página oficial de enlaces, comunidad y transmisiones de El Amor Traspasa.",
+    "handle": "@elamortraspasa",
+    "bio": "Cruzando fronteras con amor, esperanza y transformación. Conéctate con nuestra comunidad, proyectos solidarios y transmisiones en vivo.",
+    "avatarUrl": "https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&auto=format&fit=crop&q=80",
+    "verified": true,
+    "location": "Comunidad Global • Internacional",
+    "footerText": "© El Amor Traspasa • Cruzando Fronteras con Amor",
+    "featuredMedia": {
+      "enabled": true,
+      "title": "Último Mensaje: El Amor Nunca Se Rinde",
+      "subtitle": "Míralo ahora en YouTube • Domingos en Vivo",
+      "tag": "DESTACADO",
+      "videoUrl": "https://www.youtube.com",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80"
+    },
+    "socialLinks": [
+      {
+        "id": "soc-1",
+        "platform": "whatsapp",
+        "label": "WhatsApp",
+        "url": "https://wa.me/34600000000?text=Hola%20El%20Amor%20Traspasa,%20quiero%20conectar",
+        "active": true
+      },
+      {
+        "id": "soc-2",
+        "platform": "instagram",
+        "label": "Instagram",
+        "url": "https://instagram.com/elamortraspasa",
+        "active": true
+      },
+      {
+        "id": "soc-3",
+        "platform": "youtube",
+        "label": "YouTube",
+        "url": "https://youtube.com/@elamortraspasa",
+        "active": true
+      },
+      {
+        "id": "soc-4",
+        "platform": "spotify",
+        "label": "Spotify",
+        "url": "https://open.spotify.com",
+        "active": true
+      },
+      {
+        "id": "soc-5",
+        "platform": "tiktok",
+        "label": "TikTok",
+        "url": "https://tiktok.com/@elamortraspasa",
+        "active": true
+      },
+      {
+        "id": "soc-6",
+        "platform": "email",
+        "label": "Contacto",
+        "url": "mailto:contacto@elamortraspasa.com",
+        "active": true
+      }
+    ],
+    "customTexts": {
+      "topBarButtonText": "Configurar",
+      "topBarLiveBadge": "clics en vivo",
+      "shareModalButtonText": "Ver Código QR & Compartir",
+      "categoryAll": "Todos",
+      "categoryCommunity": "Comunidad",
+      "categoryMultimedia": "Transmisiones",
+      "categoryDonations": "Donaciones",
+      "emptyStateText": "No hay enlaces en esta categoría.",
+      "verifiedBadgeText": "Cuenta Oficial Verificada"
+    },
+    "pwaIconUrl": "pwa-512x512.png",
+    "companyBranding": {
+      "enabled": true,
+      "name": "LA VISUAL MARKETING",
+      "logoUrl": "la-visual-marketing.png",
+      "websiteUrl": "https://lavisualmk.alastecno.com",
+      "label": "Desarrollado & Diseñado por"
+    },
+    "categoryFilters": {
+      "enabled": true,
+      "activeCategories": ["all", "community", "multimedia", "donations"]
+    }
+  },
+  "links": [
+    {
+      "id": "link-whatsapp-group",
+      "title": "Comunidad Oficial en WhatsApp",
+      "subtitle": "Mensajes inspiradores diarios y anuncios exclusivos",
+      "url": "https://chat.whatsapp.com/sampleInviteCode",
+      "icon": "whatsapp",
+      "iconType": "custom",
+      "customImageUrl": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%2325D366'/><path fill='white' d='M50 20C33.4 20 20 33.4 20 50c0 5.3 1.4 10.3 3.8 14.7L20 80l15.7-3.7C40 78.6 44.9 80 50 80c16.6 0 30-13.4 30-30S66.6 20 50 20zm14.7 42.4c-.6 1.7-3.5 3.3-4.9 3.5-1.3.2-3 .3-8.8-2.1-7.4-3-12.2-10.5-12.6-11-.4-.5-3.1-4.1-3.1-7.8s2-5.5 2.7-6.2c.7-.7 1.6-.9 2.1-.9.5 0 1.1 0 1.6.1.5.1 1.2-.2 1.8 1.4.7 1.6 2.3 5.6 2.5 6 .2.4.3.9.1 1.4-.2.5-.5.9-.8 1.3-.3.4-.7.9-.9 1.2-.3.3-.6.7-.3 1.3.4.6 1.6 2.6 3.4 4.3 2.4 2.1 4.4 2.8 5 3.1.6.3 1 .3 1.4-.2.4-.5 1.7-2 2.2-2.7.5-.7.9-.6 1.5-.4.6.2 3.8 1.8 4.4 2.1.6.3 1.1.5 1.2.8.2.2.2 1.6-.4 3.3z'/></svg>",
+      "pop3d": {
+        "enabled": true,
+        "foregroundMotion": "float",
+        "popIntensity": "medium",
+        "backgroundStyle": "darkened",
+        "interactiveTilt": true
+      },
+      "badge": {
+        "text": "MÁS POPULAR",
+        "color": "emerald"
+      },
+      "animation": "pulse",
+      "active": true,
+      "clicks": 1420,
+      "isPinned": true,
+      "category": "community"
+    },
+    {
+      "id": "link-youtube-live",
+      "title": "Transmisión en Vivo Domingos",
+      "subtitle": "Únete a las 11:00 AM (España / Madrid) en YouTube",
+      "url": "https://youtube.com/@elamortraspasa/live",
+      "icon": "video",
+      "iconType": "custom",
+      "customImageUrl": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23FF0000'/><polygon points='40,32 70,50 40,68' fill='white'/></svg>",
+      "pop3d": {
+        "enabled": true,
+        "foregroundMotion": "pulse",
+        "popIntensity": "medium",
+        "backgroundStyle": "darkened",
+        "interactiveTilt": true
+      },
+      "badge": {
+        "text": "EN VIVO",
+        "color": "red"
+      },
+      "animation": "glow",
+      "active": true,
+      "clicks": 980,
+      "isPinned": true,
+      "category": "multimedia"
+    },
+    {
+      "id": "link-donations",
+      "title": "Siembra y Donaciones Solidarias",
+      "subtitle": "Apoya nuestros comedores sociales y proyectos de ayuda humanitaria",
+      "url": "https://donorbox.org/sample-elamortraspasa",
+      "icon": "heart",
+      "iconType": "custom",
+      "customImageUrl": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='heartGrad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23fb7185'/><stop offset='100%25' stop-color='%23e11d48'/></linearGradient></defs><circle cx='50' cy='50' r='46' fill='url(%23heartGrad)'/><path fill='white' d='M50 72s-22-13.5-22-29.2c0-8.2 6.6-14.8 14.8-14.8 4.6 0 8.7 2.1 11.2 5.4 2.5-3.3 6.6-5.4 11.2-5.4 8.2 0 14.8 6.6 14.8 14.8C72 58.5 50 72 50 72z'/></svg>",
+      "pop3d": {
+        "enabled": true,
+        "foregroundMotion": "float",
+        "popIntensity": "subtle",
+        "backgroundStyle": "darkened",
+        "interactiveTilt": true
+      },
+      "badge": {
+        "text": "SOLIDARIDAD",
+        "color": "rose"
+      },
+      "animation": "none",
+      "active": true,
+      "clicks": 654,
+      "category": "donations"
+    },
+    {
+      "id": "link-courses",
+      "title": "Cursos y Clases de Formación",
+      "subtitle": "Aprende con nuestros docentes y mentores dedicados",
+      "url": "https://elamortraspasa.com/cursos",
+      "icon": "book",
+      "iconType": "custom",
+      "customImageUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
+      "pop3d": {
+        "enabled": true,
+        "isAvatarPhoto": true,
+        "avatarShape": "circle",
+        "foregroundMotion": "float",
+        "popIntensity": "medium",
+        "backgroundStyle": "darkened",
+        "backgroundVisibility": 0.8,
+        "offsetDirection": "top-left",
+        "interactiveTilt": true
+      },
+      "badge": {
+        "text": "DOCENTES",
+        "color": "amber"
+      },
+      "animation": "none",
+      "active": true,
+      "clicks": 720,
+      "category": "community"
+    },
+    {
+      "id": "link-prayer",
+      "title": "Peticiones de Oración y Acompañamiento",
+      "subtitle": "Nuestro equipo pastoral ora por ti confidencialmente",
+      "url": "https://wa.me/34600000000?text=Hola,%20deseo%20hacer%20una%20peticion%20de%20oracion",
+      "icon": "sparkles",
+      "badge": {
+        "text": "CONFIDENCIAL",
+        "color": "amber"
+      },
+      "animation": "none",
+      "active": true,
+      "clicks": 532,
+      "category": "community"
+    },
+    {
+      "id": "link-podcast",
+      "title": "Podcast: El Amor Traspasa en Spotify",
+      "subtitle": "Reflexiones y prédicas en cualquier momento de tu día",
+      "url": "https://open.spotify.com/show/sample-podcast",
+      "icon": "music",
+      "badge": {
+        "text": "NUEVO EPISODIO",
+        "color": "purple"
+      },
+      "animation": "none",
+      "active": true,
+      "clicks": 418,
+      "category": "multimedia"
+    },
+    {
+      "id": "link-events",
+      "title": "Próximos Eventos y Retiros 2026",
+      "subtitle": "Calendario de actividades presenciales y virtuales",
+      "url": "https://elamortraspasa.com/eventos",
+      "icon": "calendar",
+      "badge": {
+        "text": "ABRIL 2026",
+        "color": "blue"
+      },
+      "animation": "none",
+      "active": true,
+      "clicks": 375,
+      "category": "general"
+    },
+    {
+      "id": "link-official-site",
+      "title": "Sitio Web Oficial El Amor Traspasa",
+      "subtitle": "Conoce nuestra historia, equipo y sedes en el mundo",
+      "url": "https://elamortraspasa.com",
+      "icon": "globe",
+      "animation": "none",
+      "active": true,
+      "clicks": 290,
+      "category": "general"
+    }
+  ],
+  "theme": {
+    "presetId": "elamor",
+    "bgType": "gradient",
+    "bgGradient": "from-amber-950 via-slate-950 to-rose-950",
+    "bgSolidColor": "#0f172a",
+    "cardStyle": "glass",
+    "cardBgColor": "rgba(255, 255, 255, 0.08)",
+    "cardTextColor": "#ffffff",
+    "cardBorderColor": "rgba(245, 158, 11, 0.35)",
+    "accentColor": "#f59e0b",
+    "borderRadius": "rounded-2xl",
+    "fontStyle": "sans",
+    "buttonHoverEffect": "scale",
+    "showBackgroundBubbles": true,
+    "buttonSpacing": "normal",
+    "buttonGapPx": 20
+  },
+  "password": "admin123"
+}
