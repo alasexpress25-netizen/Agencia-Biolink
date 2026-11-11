@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Lock,
@@ -49,6 +49,11 @@ import {
   Sliders,
   User,
   MoveVertical,
+  Calendar,
+  Clock,
+  DollarSign,
+  Tag,
+  Briefcase,
 } from 'lucide-react';
 import {
   LinkItem,
@@ -64,10 +69,12 @@ import {
   PopIntensity,
   BackgroundPlaneStyle,
   AvatarShape,
+  ServiceItem,
 } from '../types';
 import { storageService } from '../services/storage';
+import { supabase, SITE_ID, isSupabaseConfigured } from '../services/supabase';
 import { AVAILABLE_ICONS, IconRenderer } from './IconRenderer';
-import { THEME_PRESETS } from '../data/defaultData';
+import { THEME_PRESETS, DEFAULT_SERVICES } from '../data/defaultData';
 import { ICON_3D_PRESETS } from '../data/icon3dPresets';
 import { AVATAR_PHOTO_PRESETS } from '../data/avatarPhotoPresets';
 import { extractYouTubeId, getYouTubeThumbnail, formatSocialUrl } from '../utils/youtube';
@@ -87,7 +94,7 @@ interface AdminModalProps {
   onSimulateClick: (linkId: string) => void;
 }
 
-type TabType = 'analytics' | 'links' | 'video' | 'social' | 'texts' | 'appearance' | 'security' | 'backup';
+type TabType = 'analytics' | 'links' | 'services' | 'video' | 'social' | 'texts' | 'appearance' | 'security' | 'backup';
 
 const AVATAR_PRESETS = [
   {
@@ -146,6 +153,11 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   const [editingLink, setEditingLink] = useState<LinkItem | null>(null);
   const [isAddingLink, setIsAddingLink] = useState(false);
 
+  // Service Editor State (Add or Edit)
+  const [editingService, setEditingService] = useState<ServiceItem | null>(null);
+  const [isAddingService, setIsAddingService] = useState(false);
+  const [deletingServiceId, setDeletingServiceId] = useState<string | null>(null);
+
   // Add new social network state
   const [isAddingSocial, setIsAddingSocial] = useState(false);
   const [newSocialPlatform, setNewSocialPlatform] = useState<SocialLink['platform']>('whatsapp');
@@ -160,8 +172,10 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   const [pwaProgressStep, setPwaProgressStep] = useState<string | null>(null);
   const [pwaUploadFile, setPwaUploadFile] = useState<File | null>(null);
   const [pwaUploadPreview, setPwaUploadPreview] = useState<string | null>(null);
-  const [copiedConfig, setCopiedConfig] = useState(false);
-  const [isSavingToDisk, setIsSavingToDisk] = useState(false);
+  const [emailInput, setEmailInput] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [syncState, setSyncState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [syncMessage, setSyncMessage] = useState('');
 
   const handleDownloadPwaIcons = async () => {
     try {
@@ -181,6 +195,43 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     }
   };
 
+  // Trae las métricas REALES del servidor y las refleja en el panel
+  const loadRemoteAnalytics = async () => {
+    const remote = await storageService.fetchRemoteAnalytics();
+    if (!remote) return;
+    onUpdateAnalytics(remote.analytics);
+    onUpdateLinks(
+      storageService.getLinks().map((l) => ({ ...l, clicks: remote.clicksByLink[l.id] || 0 }))
+    );
+  };
+
+  // Al abrir el panel: si ya hay sesión guardada, entra directo
+  useEffect(() => {
+    if (!isOpen || !supabase) return;
+    let active = true;
+    storageService.getSession().then((session) => {
+      if (active && session) {
+        setIsAuthenticated(true);
+        loadRemoteAnalytics();
+      }
+    });
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
+  // Estado del guardado automático en la nube
+  useEffect(() => {
+    const onSync = (e: Event) => {
+      const d = (e as CustomEvent).detail || {};
+      setSyncState(d.status);
+      setSyncMessage(d.message || '');
+    };
+    window.addEventListener('biolink-sync', onSync);
+    return () => window.removeEventListener('biolink-sync', onSync);
+  }, []);
+
   const showNotification = (msg: string) => {
     setStatusNotification(msg);
     setTimeout(() => setStatusNotification(null), 3000);
@@ -188,40 +239,58 @@ export const AdminModal: React.FC<AdminModalProps> = ({
 
   if (!isOpen) return null;
 
-  // Handle Login
-  const handleLogin = (e: React.FormEvent) => {
+  // Handle Login (Supabase Auth: correo + contraseña)
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (storageService.verifyPassword(passwordInput)) {
-      setIsAuthenticated(true);
-      setAuthError('');
-      setPasswordInput('');
-    } else {
-      setAuthError('Contraseña incorrecta. (Clave por defecto: admin123)');
+    if (!supabase) {
+      setAuthError('Falta configurar Supabase (VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY).');
+      return;
     }
+    setIsLoggingIn(true);
+    setAuthError('');
+    const { error } = await supabase.auth.signInWithPassword({
+      email: emailInput.trim(),
+      password: passwordInput,
+    });
+    setIsLoggingIn(false);
+    if (error) {
+      setAuthError('Correo o contraseña incorrectos.');
+      return;
+    }
+    setIsAuthenticated(true);
+    setPasswordInput('');
+    loadRemoteAnalytics();
   };
 
-  // Handle Password Change
-  const handleChangePassword = (e: React.FormEvent) => {
+  const handleLogout = async () => {
+    await supabase?.auth.signOut();
+    setIsAuthenticated(false);
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setPasswordError('');
     setPasswordSuccess('');
 
-    if (!storageService.verifyPassword(currentPassword)) {
-      setPasswordError('La contraseña actual no es correcta.');
-      return;
-    }
-    if (newPassword.length < 4) {
-      setPasswordError('La nueva contraseña debe tener al menos 4 caracteres.');
+    if (newPassword.length < 6) {
+      setPasswordError('La nueva contraseña debe tener al menos 6 caracteres.');
       return;
     }
     if (newPassword !== confirmPassword) {
       setPasswordError('Las contraseñas no coinciden.');
       return;
     }
+    if (!supabase) {
+      setPasswordError('Supabase no está configurado.');
+      return;
+    }
 
-    storageService.savePassword(newPassword);
-    setPasswordSuccess('¡Contraseña actualizada con éxito! Se utilizará para tus próximos accesos.');
-    setCurrentPassword('');
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) {
+      setPasswordError(error.message);
+      return;
+    }
+    setPasswordSuccess('¡Contraseña actualizada con éxito! Se utilizará en tus próximos accesos.');
     setNewPassword('');
     setConfirmPassword('');
   };
@@ -268,6 +337,61 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     storageService.saveLinks(newLinks);
   };
 
+  // Service Actions
+  const currentServices: ServiceItem[] = profile.services || DEFAULT_SERVICES;
+
+  const handleSaveService = (serviceToSave: ServiceItem) => {
+    let updatedServices: ServiceItem[];
+    if (isAddingService) {
+      updatedServices = [...currentServices, serviceToSave];
+    } else {
+      updatedServices = currentServices.map((s) => (s.id === serviceToSave.id ? serviceToSave : s));
+    }
+    const updatedProfile = { ...profile, services: updatedServices };
+    onUpdateProfile(updatedProfile);
+    storageService.saveProfile(updatedProfile);
+    setIsAddingService(false);
+    setEditingService(null);
+    showNotification(isAddingService ? 'Servicio agregado con éxito' : 'Servicio actualizado');
+  };
+
+  const handleConfirmDeleteService = (id: string) => {
+    const updatedServices = currentServices.filter((s) => s.id !== id);
+    const updatedProfile = { ...profile, services: updatedServices };
+    onUpdateProfile(updatedProfile);
+    storageService.saveProfile(updatedProfile);
+    setDeletingServiceId(null);
+    showNotification('Servicio eliminado con éxito');
+  };
+
+  const handleToggleServiceActive = (id: string) => {
+    const updatedServices = currentServices.map((s) => (s.id === id ? { ...s, active: !s.active } : s));
+    const updatedProfile = { ...profile, services: updatedServices };
+    onUpdateProfile(updatedProfile);
+    storageService.saveProfile(updatedProfile);
+  };
+
+  const handleMoveService = (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= currentServices.length) return;
+
+    const newServices = [...currentServices];
+    const temp = newServices[index];
+    newServices[index] = newServices[targetIndex];
+    newServices[targetIndex] = temp;
+
+    const updatedProfile = { ...profile, services: newServices };
+    onUpdateProfile(updatedProfile);
+    storageService.saveProfile(updatedProfile);
+  };
+
+  const handleResetServices = () => {
+    const updatedProfile = { ...profile, services: DEFAULT_SERVICES };
+    onUpdateProfile(updatedProfile);
+    storageService.saveProfile(updatedProfile);
+    showNotification('Servicios restablecidos a valores por defecto');
+  };
+
   // Theme Preset Change
   const handleSelectThemePreset = (presetId: ThemePresetId) => {
     const preset = THEME_PRESETS[presetId];
@@ -287,84 +411,17 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     showNotification('¡Todas las métricas y clics se han reiniciado a 0!');
   };
 
-  // Export clientConfig.json for Agency Repositories
-  const handleDownloadClientConfig = () => {
+  // Export & Import full backup
+  const handleExportBackup = () => {
     const json = storageService.exportClientConfigFile();
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'clientConfig.json';
-    a.click();
-    URL.revokeObjectURL(url);
-    showNotification('¡Archivo clientConfig.json descargado para tu nuevo repositorio!');
-  };
-
-  const handleCopyClientConfig = async () => {
-    try {
-      const json = storageService.exportClientConfigFile();
-      await navigator.clipboard.writeText(json);
-      setCopiedConfig(true);
-      showNotification('¡Código clientConfig.json copiado al portapapeles!');
-      setTimeout(() => setCopiedConfig(false), 2500);
-    } catch {
-      showNotification('Error al copiar al portapapeles');
-    }
-  };
-
-  const handleDirectSaveToDisk = async () => {
-    setIsSavingToDisk(true);
-    const success = await storageService.saveToDiskServer();
-    setIsSavingToDisk(false);
-    if (success) {
-      showNotification('✅ ¡Grabado con éxito en src/data/clientConfig.json (botones, enlaces y clics)!');
-    } else {
-      showNotification('Aviso: no se pudo escribir por servidor local. Usa "Descargar clientConfig.json".');
-    }
-  };
-
-  // Export & Import full backup
-  const handleExportBackup = () => {
-    const json = storageService.exportFullBackup();
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `biolink-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `biolink-copia-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
     showNotification('Copia de seguridad descargada');
-  };
-
-  const handleImportBackup = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const content = event.target?.result as string;
-      if (storageService.importBackup(content)) {
-        onUpdateLinks(storageService.getLinks());
-        onUpdateProfile(storageService.getProfile());
-        onUpdateTheme(storageService.getTheme());
-        onUpdateAnalytics(storageService.getAnalytics());
-        showNotification('Configuración restaurada con éxito');
-      } else {
-        showNotification('Error: archivo JSON inválido');
-      }
-    };
-    reader.readAsText(file);
-  };
-
-  // Factory Reset Execution
-  const executeFactoryReset = () => {
-    const resetData = storageService.resetAllToDefault();
-    onUpdateLinks(resetData.links);
-    onUpdateProfile(resetData.profile);
-    onUpdateTheme(resetData.theme);
-    onUpdateAnalytics(resetData.analytics);
-    setShowFactoryResetConfirm(false);
-    showNotification('Restablecido al diseño original de El Amor Traspasa');
   };
 
   // Update Custom Text helper
@@ -495,10 +552,23 @@ export const AdminModal: React.FC<AdminModalProps> = ({
 
           <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">Panel de Administración</h3>
           <p className="text-xs sm:text-sm text-slate-400 mb-6">
-            Ingresa tu contraseña para editar video destacado, enlaces, redes reales y analíticas.
+            Ingresa con tu correo y contraseña para editar tu BioLink. Los cambios se guardan automáticamente.
           </p>
 
           <form onSubmit={handleLogin} className="space-y-4">
+            <div className="relative text-left">
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Correo</label>
+              <input
+                type="email"
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+                placeholder="tu@correo.com"
+                autoComplete="username"
+                required
+                className="w-full px-4 py-3 text-sm rounded-xl bg-slate-950 border border-slate-750 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors"
+                autoFocus
+              />
+            </div>
             <div className="relative text-left">
               <label className="block text-xs font-semibold text-slate-300 mb-1.5">
                 Contraseña de Acceso
@@ -510,7 +580,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                   onChange={(e) => setPasswordInput(e.target.value)}
                   placeholder="Introduce tu clave..."
                   className="w-full px-4 py-3 text-sm rounded-xl bg-slate-950 border border-slate-750 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors pr-11"
-                  autoFocus
+                  autoComplete="current-password"
+                  required
                 />
                 <button
                   type="button"
@@ -534,22 +605,10 @@ export const AdminModal: React.FC<AdminModalProps> = ({
               className="w-full py-3 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 transition-all shadow-lg shadow-amber-500/20 active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
             >
               <KeyRound className="w-4 h-4" />
-              <span>Entrar al Panel</span>
+              <span>{isLoggingIn ? 'Entrando…' : 'Entrar al Panel'}</span>
             </button>
           </form>
 
-          {/* Quick Demo Hint */}
-          <div className="mt-6 pt-5 border-t border-slate-800 text-center">
-            <p className="text-[11px] text-slate-400">
-              💡 Clave inicial por defecto:{' '}
-              <span className="font-mono font-bold text-amber-400 bg-amber-400/10 px-1.5 py-0.5 rounded border border-amber-400/20">
-                admin123
-              </span>
-            </p>
-            <p className="text-[10px] text-slate-500 mt-1">
-              Podrás cambiarla inmediatamente desde la pestaña &quot;Seguridad&quot; adentro del panel.
-            </p>
-          </div>
         </div>
       </div>
     );
@@ -586,6 +645,20 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                   En Vivo
                 </span>
+                {syncState !== 'idle' && (
+                  <span
+                    title={syncMessage}
+                    className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${
+                      syncState === 'saved'
+                        ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                        : syncState === 'saving'
+                          ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                          : 'bg-rose-500/15 text-rose-300 border-rose-500/30'
+                    }`}
+                  >
+                    {syncState === 'saved' ? '✓ Guardado' : syncState === 'saving' ? 'Guardando…' : 'Error al guardar'}
+                  </span>
+                )}
               </h2>
               <p className="text-xs text-slate-400">Personaliza enlaces, video destacado, redes reales y analíticas</p>
             </div>
@@ -593,12 +666,12 @@ export const AdminModal: React.FC<AdminModalProps> = ({
 
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setIsAuthenticated(false)}
+              onClick={handleLogout}
               className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-750 rounded-lg transition-colors border border-slate-700 cursor-pointer"
               title="Cerrar Sesión del Administrador"
             >
               <Lock className="w-3.5 h-3.5" />
-              <span>Bloquear</span>
+              <span>Cerrar sesión</span>
             </button>
             <button
               onClick={onClose}
@@ -645,6 +718,18 @@ export const AdminModal: React.FC<AdminModalProps> = ({
           >
             <LayoutGrid className="w-4 h-4" />
             <span>Enlaces ({links.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('services')}
+            className={`flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-xl transition-all whitespace-nowrap cursor-pointer ${
+              activeTab === 'services'
+                ? 'bg-amber-500 text-slate-950 shadow-md font-bold'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+            }`}
+          >
+            <Briefcase className="w-4 h-4" />
+            <span>Servicios & Turnos ({(profile.services || DEFAULT_SERVICES).length})</span>
           </button>
 
           <button
@@ -2784,6 +2869,383 @@ export const AdminModal: React.FC<AdminModalProps> = ({
             </div>
           )}
 
+          {/* ================= TAB: SERVICES & APPOINTMENTS ================= */}
+          {activeTab === 'services' && (
+            <div className="space-y-4 animate-fade-in">
+              {/* Quick links & Banner */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-amber-950/30 border border-emerald-500/30">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                      <Briefcase className="w-4 h-4 text-emerald-400" />
+                      <span>Catálogo de Servicios, Tarifas y Turnos</span>
+                    </h3>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">
+                      WhatsApp
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 mt-1">
+                    Edita precios, duraciones y nombres. Se actualizan automáticamente en el agendador del BioLink, en <code className="text-amber-400">/turnos.html</code> y en <code className="text-emerald-400">/servicios.html</code>.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap shrink-0">
+                  <a
+                    href="/servicios.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition-colors"
+                  >
+                    <span>Ver /servicios.html</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                  <a
+                    href="/turnos.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition-colors"
+                  >
+                    <span>Ver /turnos.html</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Action Toolbar */}
+              <div className="flex items-center justify-between flex-wrap gap-2 pt-1">
+                <div className="text-xs text-slate-400">
+                  Total de servicios: <strong className="text-white">{currentServices.length}</strong> ({currentServices.filter((s) => s.active).length} activos)
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleResetServices}
+                    className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 hover:text-white transition-colors border border-slate-750 cursor-pointer"
+                    title="Restablece la lista a los 5 servicios originales"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Restablecer Defectos</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setEditingService({
+                        id: `srv-${Date.now()}`,
+                        name: '',
+                        price: '$40 USD',
+                        duration: '45 min',
+                        description: '',
+                        icon: '💼',
+                        badge: 'NUEVO',
+                        active: true,
+                      });
+                      setIsAddingService(true);
+                    }}
+                    className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 transition-all shadow-md shadow-amber-500/20 active:scale-95 cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Agregar Servicio</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Delete Service Confirmation Modal */}
+              {deletingServiceId && (
+                <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-between gap-4 animate-fade-in">
+                  <div className="flex items-center gap-3 text-rose-300 text-xs">
+                    <AlertCircle className="w-5 h-5 shrink-0" />
+                    <span>¿Confirmas que deseas eliminar este servicio permanentemente?</span>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => setDeletingServiceId(null)}
+                      className="px-3 py-1.5 text-xs rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-750 cursor-pointer"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={() => handleConfirmDeleteService(deletingServiceId)}
+                      className="px-3 py-1.5 text-xs font-bold rounded-lg bg-rose-600 text-white hover:bg-rose-500 cursor-pointer"
+                    >
+                      Sí, Eliminar
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Services List Cards */}
+              <div className="space-y-2.5">
+                {currentServices.map((srv, idx) => (
+                  <div
+                    key={srv.id}
+                    className={`flex items-center justify-between p-3.5 sm:p-4 rounded-2xl border transition-all ${
+                      srv.active
+                        ? 'bg-slate-950/80 border-slate-800 hover:border-slate-700'
+                        : 'bg-slate-950/40 border-slate-850 opacity-60'
+                    }`}
+                  >
+                    {/* Left: Icon, Name, Price, Duration */}
+                    <div className="flex items-center gap-3.5 min-w-0 pr-3">
+                      <div className="w-11 h-11 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-2xl shrink-0 shadow-inner">
+                        {srv.icon || '💼'}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h4 className="text-sm font-bold text-white truncate">{srv.name}</h4>
+                          {srv.badge && (
+                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold">
+                              {srv.badge}
+                            </span>
+                          )}
+                          {!srv.active && (
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-medium">
+                              Inactivo
+                            </span>
+                          )}
+                        </div>
+                        {srv.description && (
+                          <p className="text-xs text-slate-400 line-clamp-1 mt-0.5">{srv.description}</p>
+                        )}
+                        <div className="flex items-center gap-2.5 text-xs mt-1">
+                          <span className="font-bold text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                            {srv.price || 'A convenir'}
+                          </span>
+                          {srv.duration && (
+                            <span className="text-slate-400 flex items-center gap-1 text-[11px]">
+                              <Clock className="w-3 h-3 text-slate-500" />
+                              <span>{srv.duration}</span>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right: Actions */}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {/* Active toggle */}
+                      <button
+                        onClick={() => handleToggleServiceActive(srv.id)}
+                        className={`p-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                          srv.active
+                            ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25'
+                            : 'bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-750'
+                        }`}
+                        title={srv.active ? 'Desactivar servicio' : 'Activar servicio'}
+                      >
+                        {srv.active ? <Check className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                      </button>
+
+                      {/* Move Up */}
+                      <button
+                        onClick={() => handleMoveService(idx, 'up')}
+                        disabled={idx === 0}
+                        className="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-900 hover:bg-slate-800 disabled:opacity-30 disabled:hover:text-slate-400 transition-colors border border-slate-800 cursor-pointer"
+                        title="Subir posición"
+                      >
+                        <ArrowUp className="w-3.5 h-3.5" />
+                      </button>
+
+                      {/* Move Down */}
+                      <button
+                        onClick={() => handleMoveService(idx, 'down')}
+                        disabled={idx === currentServices.length - 1}
+                        className="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-900 hover:bg-slate-800 disabled:opacity-30 disabled:hover:text-slate-400 transition-colors border border-slate-800 cursor-pointer"
+                        title="Bajar posición"
+                      >
+                        <ArrowDown className="w-3.5 h-3.5" />
+                      </button>
+
+                      {/* Edit */}
+                      <button
+                        onClick={() => {
+                          setEditingService({ ...srv });
+                          setIsAddingService(false);
+                        }}
+                        className="p-2 text-slate-300 hover:text-amber-400 rounded-xl bg-slate-900 hover:bg-slate-800 transition-colors border border-slate-800 cursor-pointer"
+                        title="Editar servicio"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+
+                      {/* Delete */}
+                      <button
+                        onClick={() => setDeletingServiceId(srv.id)}
+                        className="p-2 text-slate-400 hover:text-rose-400 rounded-xl bg-slate-900 hover:bg-slate-800 transition-colors border border-slate-800 cursor-pointer"
+                        title="Eliminar servicio"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Service Editor Modal/Card */}
+              {editingService && (
+                <div className="p-5 sm:p-6 rounded-3xl bg-slate-950 border border-amber-500/40 space-y-4 shadow-2xl mt-4 animate-fade-in">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                      <span className="text-xl">{editingService.icon || '💼'}</span>
+                      <span>{isAddingService ? 'Agregar Nuevo Servicio' : `Editar: ${editingService.name || 'Servicio'}`}</span>
+                    </h4>
+                    <button
+                      onClick={() => {
+                        setEditingService(null);
+                        setIsAddingService(false);
+                      }}
+                      className="p-1.5 text-slate-400 hover:text-white rounded-lg bg-slate-900 cursor-pointer"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Name */}
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-semibold text-slate-300 mb-1">
+                        Nombre del Servicio *
+                      </label>
+                      <input
+                        type="text"
+                        value={editingService.name}
+                        onChange={(e) => setEditingService({ ...editingService, name: e.target.value })}
+                        placeholder="Ej: Asesoría Personalizada 1 a 1"
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-900 border border-slate-750 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                      />
+                    </div>
+
+                    {/* Price */}
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">
+                        <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>Precio / Tarifa *</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={editingService.price}
+                        onChange={(e) => setEditingService({ ...editingService, price: e.target.value })}
+                        placeholder="Ej: $50 USD, €40, Gratis, A consultar"
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-900 border border-slate-750 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 font-mono"
+                      />
+                    </div>
+
+                    {/* Duration */}
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-amber-400" />
+                        <span>Duración Estimada</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={editingService.duration || ''}
+                        onChange={(e) => setEditingService({ ...editingService, duration: e.target.value })}
+                        placeholder="Ej: 45 min, 1 hora, 30 min"
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-900 border border-slate-750 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                      />
+                    </div>
+
+                    {/* Badge */}
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">
+                        <Tag className="w-3.5 h-3.5 text-purple-400" />
+                        <span>Etiqueta / Badge (Opcional)</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={editingService.badge || ''}
+                        onChange={(e) => setEditingService({ ...editingService, badge: e.target.value })}
+                        placeholder="Ej: MÁS SOLICITADO, OFERTA, NUEVO"
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-900 border border-slate-750 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 uppercase"
+                      />
+                    </div>
+
+                    {/* Emoji Icon */}
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-300 mb-1">
+                        Emoji / Icono
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={editingService.icon || '💼'}
+                          onChange={(e) => setEditingService({ ...editingService, icon: e.target.value })}
+                          className="w-16 px-3 py-2 text-center text-lg rounded-xl bg-slate-900 border border-slate-750 text-white focus:outline-none focus:border-amber-500"
+                        />
+                        <div className="flex items-center gap-1 flex-wrap">
+                          {['💼', '🗓️', '📊', '💻', '📍', '⭐', '🚀', '💡', '🎯', '🛠️'].map((em) => (
+                            <button
+                              key={em}
+                              type="button"
+                              onClick={() => setEditingService({ ...editingService, icon: em })}
+                              className="p-1.5 text-sm rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 cursor-pointer"
+                            >
+                              {em}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-semibold text-slate-300 mb-1">
+                        Descripción o Detalles del Servicio
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={editingService.description || ''}
+                        onChange={(e) => setEditingService({ ...editingService, description: e.target.value })}
+                        placeholder="Describe qué incluye el servicio, beneficios o metodología..."
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-slate-900 border border-slate-750 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 resize-none"
+                      />
+                    </div>
+
+                    {/* Active toggle */}
+                    <div className="sm:col-span-2 flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800">
+                      <div>
+                        <div className="text-xs font-semibold text-white">Servicio Activo</div>
+                        <div className="text-[11px] text-slate-400">Si está inactivo, no se mostrará para reservar turnos.</div>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={editingService.active}
+                        onChange={(e) => setEditingService({ ...editingService, active: e.target.checked })}
+                        className="w-4 h-4 accent-amber-500 rounded cursor-pointer"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Footer actions */}
+                  <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingService(null);
+                        setIsAddingService(false);
+                      }}
+                      className="px-4 py-2 text-xs rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-750 cursor-pointer"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!editingService.name.trim()) {
+                          showNotification('Por favor ingresa un nombre para el servicio');
+                          return;
+                        }
+                        handleSaveService(editingService);
+                      }}
+                      className="px-5 py-2 text-xs font-bold rounded-xl bg-amber-500 text-slate-950 hover:bg-amber-400 transition-colors shadow-md cursor-pointer"
+                    >
+                      Guardar Servicio
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* ================= TAB: PERSONALIZAR TODOS LOS TEXTOS ================= */}
           {activeTab === 'texts' && (
             <div className="space-y-6 animate-fade-in">
@@ -3918,27 +4380,13 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 <form onSubmit={handleChangePassword} className="space-y-4">
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1">
-                      Contraseña Actual *
-                    </label>
-                    <input
-                      type="password"
-                      value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
-                      placeholder="Introduce tu clave actual..."
-                      className="w-full px-4 py-2.5 text-xs rounded-xl bg-slate-900 border border-slate-800 text-white placeholder-slate-600 focus:outline-none focus:border-amber-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
                       Nueva Contraseña *
                     </label>
                     <input
                       type="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="Mínimo 4 caracteres..."
+                      placeholder="Mínimo 6 caracteres..."
                       className="w-full px-4 py-2.5 text-xs rounded-xl bg-slate-900 border border-slate-800 text-white placeholder-slate-600 focus:outline-none focus:border-amber-500"
                       required
                     />
@@ -3987,166 +4435,51 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                     Seguridad Activa
                   </p>
                   <p className="text-[11px] leading-relaxed">
-                    Tu nueva contraseña se guarda de forma segura en el almacenamiento de tu navegador.
-                    Asegúrate de recordarla para futuros accesos al panel de configuración.
+                    Tu contraseña la gestiona Supabase Auth (cifrada en el servidor, no en el navegador ni en el repositorio).
                   </p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* ================= TAB: BACKUP & RESTORE ================= */}
+          {/* ================= TAB: RESPALDO (simple) ================= */}
           {activeTab === 'backup' && (
             <div className="max-w-xl mx-auto space-y-5 animate-fade-in">
-              {/* Card 1: Agency Client Repository Config */}
-              <div className="p-6 rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950/30 border-2 border-amber-500/40 space-y-4 shadow-xl">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                    <FileCode className="w-4 h-4 text-amber-400" />
-                    <span>Guardar Configuración para el Repositorio del Cliente</span>
-                  </h4>
-                  <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                    Modo Agencia
-                  </span>
-                </div>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Para que este BioLink se vea exactamente igual en todos los teléfonos y computadoras al publicarlo en <strong>GitHub Pages</strong> o cualquier hosting, descarga este archivo y reemplázalo en tu nuevo repositorio.
-                </p>
-
-                <div className="p-3 bg-black/40 rounded-xl border border-white/5 space-y-1.5 text-[11px] text-slate-400">
-                  <div className="flex items-center gap-2 text-amber-300 font-semibold">
-                    <span>📌 Ruta del archivo en el repositorio:</span>
-                    <code className="bg-slate-800 px-1.5 py-0.5 rounded text-white font-mono">src/data/clientConfig.json</code>
-                  </div>
-                  <p>
-                    Al hacer commit y push a GitHub, el título de la pestaña, el manifest PWA, los enlaces, colores y fotos se compilarán fijos para todos los visitantes del mundo.
-                  </p>
-                  <div className="pt-1 flex items-center gap-3 text-[10px] text-amber-200/90 font-mono">
-                    <span>📊 Clics: {analytics.totalClicks}</span>
-                    <span>•</span>
-                    <span>🔗 Botones: {links.length}</span>
-                    <span>•</span>
-                    <span>👁️ Visitas: {analytics.totalVisits}</span>
-                  </div>
-                </div>
-
-                <div className="space-y-2 pt-1">
-                  <button
-                    type="button"
-                    onClick={handleDirectSaveToDisk}
-                    disabled={isSavingToDisk}
-                    className="w-full py-3 px-4 text-xs font-bold rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 shadow-lg shadow-emerald-500/20 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                  >
-                    {isSavingToDisk ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 animate-spin text-slate-950" />
-                        <span>Grabando botones, clics y configuración en el archivo...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Check className="w-4 h-4 text-slate-950" />
-                        <span>💾 Grabar Cambios Directamente en clientConfig.json (1 Clic)</span>
-                      </>
-                    )}
-                  </button>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    <button
-                      onClick={handleDownloadClientConfig}
-                      className="flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-bold rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40 transition-all active:scale-95 cursor-pointer"
-                    >
-                      <Download className="w-4 h-4 text-amber-400" />
-                      <span>📥 Descargar Archivo JSON</span>
-                    </button>
-
-                    <button
-                      onClick={handleCopyClientConfig}
-                      className="flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-white border border-slate-700 transition-colors cursor-pointer"
-                    >
-                      {copiedConfig ? (
-                        <>
-                          <Check className="w-4 h-4 text-emerald-400" />
-                          <span className="text-emerald-400 font-bold">¡Copiado!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4 text-amber-400" />
-                          <span>📋 Copiar Código JSON</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Card 2: Backup & Restore */}
               <div className="p-6 rounded-3xl bg-slate-950 border border-slate-800 space-y-4">
                 <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Download className="w-4 h-4 text-amber-400" />
-                  <span>Copia de Seguridad y Restauración</span>
+                  <RefreshCw className="w-4 h-4 text-emerald-400" />
+                  <span>Guardado automático en la nube</span>
                 </h4>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Exporta toda la configuración (enlaces, textos, colores y analíticas) a un archivo JSON para tener un respaldo o moverlo a otro dispositivo.
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Todo lo que cambies (enlaces, colores, textos, servicios, redes) se guarda solo y lo ven al instante
+                  todos los visitantes. No necesitas descargar ni subir ningún archivo.
                 </p>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                  <button
-                    onClick={handleExportBackup}
-                    className="flex items-center justify-center gap-2 py-3 px-4 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-850 text-white border border-slate-700 transition-colors cursor-pointer"
-                  >
-                    <Download className="w-4 h-4 text-amber-400" />
-                    <span>Descargar Backup (JSON)</span>
-                  </button>
-
-                  <label className="flex items-center justify-center gap-2 py-3 px-4 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-850 text-white border border-slate-700 transition-colors cursor-pointer">
-                    <Upload className="w-4 h-4 text-emerald-400" />
-                    <span>Restaurar desde JSON</span>
-                    <input
-                      type="file"
-                      accept=".json"
-                      onChange={handleImportBackup}
-                      className="hidden"
-                    />
-                  </label>
+                <div className="flex items-center gap-2 text-[11px] font-mono text-slate-400">
+                  <span className={`w-2 h-2 rounded-full ${isSupabaseConfigured ? 'bg-emerald-400' : 'bg-rose-400'}`} />
+                  <span>{isSupabaseConfigured ? `Conectado • sitio: ${SITE_ID}` : 'Supabase sin configurar'}</span>
                 </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const r = await storageService.saveRemoteConfig();
+                    showNotification(r.ok ? '✅ Guardado en la nube' : `Error: ${r.message}`);
+                  }}
+                  className="w-full py-3 px-4 text-xs font-bold rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 shadow-lg shadow-emerald-500/20 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Guardar ahora</span>
+                </button>
               </div>
 
-              {/* Danger Zone: Factory Reset */}
-              <div className="p-6 rounded-3xl bg-rose-950/20 border border-rose-900/40 space-y-3">
-                <h4 className="text-sm font-bold text-rose-300 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4" />
-                  <span>Restablecer Valores de Fábrica</span>
-                </h4>
-                <p className="text-xs text-rose-200/70 leading-relaxed">
-                  Restaura todos los datos de muestra iniciales idénticos a El Amor Traspasa (enlaces, tema cálido, redes sociales y clave inicial admin123).
-                </p>
-
-                {showFactoryResetConfirm ? (
-                  <div className="p-3 bg-rose-900/50 rounded-xl border border-rose-600 flex items-center justify-between gap-3 animate-fade-in">
-                    <span className="text-xs font-bold text-white">¿Confirmar restauración total?</span>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => setShowFactoryResetConfirm(false)}
-                        className="px-3 py-1.5 text-xs bg-slate-800 text-slate-300 rounded-lg hover:text-white cursor-pointer"
-                      >
-                        Cancelar
-                      </button>
-                      <button
-                        onClick={executeFactoryReset}
-                        className="px-3 py-1.5 text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white rounded-lg cursor-pointer"
-                      >
-                        Sí, restaurar todo
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setShowFactoryResetConfirm(true)}
-                    className="py-2.5 px-4 text-xs font-bold rounded-xl bg-rose-600 hover:bg-rose-500 text-white transition-colors active:scale-95 cursor-pointer"
-                  >
-                    Restablecer a Valores Iniciales
-                  </button>
-                )}
+              <div className="p-5 rounded-3xl bg-slate-950 border border-slate-800 space-y-3">
+                <p className="text-xs text-slate-400">Opcional: descarga una copia de tu configuración en un archivo JSON.</p>
+                <button
+                  onClick={handleExportBackup}
+                  className="flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-semibold rounded-xl bg-slate-900 hover:bg-slate-800 text-white border border-slate-700 transition-colors cursor-pointer"
+                >
+                  <Download className="w-4 h-4 text-amber-400" />
+                  <span>Descargar copia (JSON)</span>
+                </button>
               </div>
             </div>
           )}

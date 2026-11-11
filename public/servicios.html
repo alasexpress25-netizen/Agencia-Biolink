@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Servicios y Tarifas - Reserva por WhatsApp</title>
+  <meta name="description" content="Conoce nuestros servicios profesionales, planes y tarifas transparentes. Agenda tu turno y confirma directamente por WhatsApp.">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .service-card {
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .service-card:hover {
+      transform: translateY(-4px);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100 min-h-screen antialiased flex flex-col justify-between selection:bg-amber-500 selection:text-slate-950">
+
+  <!-- Header Navigation -->
+  <header class="sticky top-0 z-40 backdrop-blur-md bg-slate-950/85 border-b border-slate-800 px-4 py-3.5">
+    <div class="max-w-5xl mx-auto flex items-center justify-between gap-3">
+      <a href="./" class="inline-flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-amber-300 transition-colors bg-amber-500/10 hover:bg-amber-500/20 px-3.5 py-1.5 rounded-full border border-amber-500/30">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        <span>Volver al BioLink</span>
+      </a>
+
+      <div class="flex items-center gap-2.5">
+        <a href="turnos.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 transition-colors">
+          <svg class="w-3.5 h-3.5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <span class="hidden sm:inline">Ir a Turnos</span>
+          <span class="sm:hidden">Turnos</span>
+        </a>
+
+        <a href="https://wa.me/5548999053493" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 transition-colors">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>WhatsApp</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Hero & Catalog -->
+  <main class="max-w-5xl mx-auto w-full px-4 py-8 sm:py-14 flex-1">
+    
+    <!-- Hero Header -->
+    <div class="text-center space-y-3.5 mb-10 sm:mb-14">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-[11px] font-mono font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-inner">
+        <span>💼 Planes, Tarifas y Servicios</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+        Nuestros Servicios y Precios
+      </h1>
+      <p class="text-xs sm:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed">
+        Elige la opción que mejor se adapte a tu necesidad. Al presionar <strong>"Quiero este servicio"</strong>, irás directamente al formulario de turnos con el servicio ya seleccionado para confirmar tu cita por WhatsApp.
+      </p>
+    </div>
+
+    <!-- Dynamic / Fallback Services Grid -->
+    <div id="servicesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+      
+      <!-- Card 1 -->
+      <div class="service-card flex flex-col justify-between p-6 rounded-3xl bg-slate-900/90 border border-slate-800 hover:border-amber-500/50 shadow-xl backdrop-blur-md relative overflow-hidden group">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl group-hover:bg-amber-500/10 transition-colors"></div>
+        <div>
+          <div class="flex items-start justify-between gap-3 mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-2xl shadow-inner">
+              💼
+            </div>
+            <span class="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase">
+              MÁS ELEGIDO
+            </span>
+          </div>
+
+          <h3 class="text-lg font-bold text-white mb-1.5 group-hover:text-amber-400 transition-colors">
+            Asesoría Personalizada
+          </h3>
+          <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+            Sesión 1 a 1 de consultoría estratégica, análisis de requerimientos y plan de acción inmediato para tu proyecto.
+          </p>
+
+          <div class="flex items-baseline gap-2 mb-4 pb-4 border-b border-slate-800">
+            <span class="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono">$50 USD</span>
+            <span class="text-xs text-slate-400">/ sesión</span>
+          </div>
+
+          <ul class="space-y-2 text-xs text-slate-300 mb-6">
+            <li class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>Duración estimada: 45 minutos</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>Auditoría y diagnóstico en vivo</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>Grabación y resumen de conclusiones</span>
+            </li>
+          </ul>
+        </div>
+
+        <a href="turnos.html?servicio=Asesor%C3%ADa%20Personalizada" class="w-full py-3.5 px-4 rounded-2xl font-bold text-xs bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 transition-all shadow-lg shadow-amber-500/20 text-center flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]">
+          <span>Quiero este servicio</span>
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="service-card flex flex-col justify-between p-6 rounded-3xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 shadow-xl backdrop-blur-md relative overflow-hidden group">
+        <div>
+          <div class="flex items-start justify-between gap-3 mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center text-2xl shadow-inner">
+              🗓️
+            </div>
+            <span class="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 uppercase">
+              RÁPIDO
+            </span>
+          </div>
+
+          <h3 class="text-lg font-bold text-white mb-1.5 group-hover:text-amber-400 transition-colors">
+            Consulta / Turno General
+          </h3>
+          <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+            Atención general, dudas técnicas o comerciales y diagnóstico inicial para orientar tus próximos pasos.
+          </p>
+
+          <div class="flex items-baseline gap-2 mb-4 pb-4 border-b border-slate-800">
+            <span class="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono">$30 USD</span>
+            <span class="text-xs text-slate-400">/ turno</span>
+          </div>
+
+          <ul class="space-y-2 text-xs text-slate-300 mb-6">
+            <li class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>Duración estimada: 30 minutos</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>Resolución de dudas clave</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>Orientación personalizada</span>
+            </li>
+          </ul>
+        </div>
+
+        <a href="turnos.html?servicio=Consulta%20%2F%20Turno%20General" class="w-full py-3.5 px-4 rounded-2xl font-bold text-xs bg-slate-800 hover:bg-slate-750 text-white transition-all text-center flex items-center justify-center gap-2 cursor-pointer border border-slate-700 hover:border-amber-500/40">
+          <span>Quiero este servicio</span>
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="service-card flex flex-col justify-between p-6 rounded-3xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/40 shadow-xl backdrop-blur-md relative overflow-hidden group">
+        <div>
+          <div class="flex items-start justify-between gap-3 mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-2xl shadow-inner">
+              📊
+            </div>
+            <span class="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 uppercase">
+              SIN COSTO
+            </span>
+          </div>
+
+          <h3 class="text-lg font-bold text-white mb-1.5 group-hover:text-emerald-400 transition-colors">
+            Presupuesto de Proyecto
+          </h3>
+          <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+            Evaluación técnica y comercial sin costo para proyectos web, campañas de marketing, branding y automatizaciones.
+          </p>
+
+          <div class="flex items-baseline gap-2 mb-4 pb-4 border-b border-slate-800">
+            <span class="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono">Gratis</span>
+            <span class="text-xs text-slate-400">/ cotización</span>
+          </div>
+
+          <ul class="space-y-2 text-xs text-slate-300 mb-6">
+            <li class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>Duración estimada: 30 minutos</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>Presupuesto formal por escrito</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>Sin compromiso de compra</span>
+            </li>
+          </ul>
+        </div>
+
+        <a href="turnos.html?servicio=Presupuesto%20de%20Proyecto" class="w-full py-3.5 px-4 rounded-2xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-slate-950 transition-all text-center flex items-center justify-center gap-2 cursor-pointer font-extrabold shadow-lg shadow-emerald-500/20">
+          <span>Quiero este servicio</span>
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="service-card flex flex-col justify-between p-6 rounded-3xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 shadow-xl backdrop-blur-md relative overflow-hidden group">
+        <div>
+          <div class="flex items-start justify-between gap-3 mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-2xl shadow-inner">
+              💻
+            </div>
+            <span class="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 uppercase">
+              ONLINE
+            </span>
+          </div>
+
+          <h3 class="text-lg font-bold text-white mb-1.5 group-hover:text-indigo-400 transition-colors">
+            Reunión Virtual (Google Meet / Zoom)
+          </h3>
+          <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+            Videollamada con pantalla compartida, asesoramiento en tiempo real y entrega de material digital.
+          </p>
+
+          <div class="flex items-baseline gap-2 mb-4 pb-4 border-b border-slate-800">
+            <span class="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono">$45 USD</span>
+            <span class="text-xs text-slate-400">/ videollamada</span>
+          </div>
+
+          <ul class="space-y-2 text-xs text-slate-300 mb-6">
+            <li class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>Duración estimada: 45 minutos</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>Enlace privado de Google Meet / Zoom</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>Asesoramiento desde cualquier país</span>
+            </li>
+          </ul>
+        </div>
+
+        <a href="turnos.html?servicio=Reuni%C3%B3n%20Virtual%20(Online)" class="w-full py-3.5 px-4 rounded-2xl font-bold text-xs bg-slate-800 hover:bg-slate-750 text-white transition-all text-center flex items-center justify-center gap-2 cursor-pointer border border-slate-700 hover:border-amber-500/40">
+          <span>Quiero este servicio</span>
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="service-card flex flex-col justify-between p-6 rounded-3xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 shadow-xl backdrop-blur-md relative overflow-hidden group">
+        <div>
+          <div class="flex items-start justify-between gap-3 mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-2xl shadow-inner">
+              📍
+            </div>
+            <span class="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 uppercase">
+              PRESENCIAL
+            </span>
+          </div>
+
+          <h3 class="text-lg font-bold text-white mb-1.5 group-hover:text-rose-400 transition-colors">
+            Turno Presencial
+          </h3>
+          <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+            Encuentro cara a cara en nuestras oficinas para coordinación integral, firma de acuerdos y revisión profunda.
+          </p>
+
+          <div class="flex items-baseline gap-2 mb-4 pb-4 border-b border-slate-800">
+            <span class="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono">$65 USD</span>
+            <span class="text-xs text-slate-400">/ sesión</span>
+          </div>
+
+          <ul class="space-y-2 text-xs text-slate-300 mb-6">
+            <li class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>Duración estimada: 60 minutos</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>Atención exclusiva y personalizada</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>Ubicación céntrica con estacionamiento</span>
+            </li>
+          </ul>
+        </div>
+
+        <a href="turnos.html?servicio=Turno%20Presencial" class="w-full py-3.5 px-4 rounded-2xl font-bold text-xs bg-slate-800 hover:bg-slate-750 text-white transition-all text-center flex items-center justify-center gap-2 cursor-pointer border border-slate-700 hover:border-amber-500/40">
+          <span>Quiero este servicio</span>
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="mt-14 sm:mt-20 p-6 sm:p-8 rounded-3xl bg-slate-900/60 border border-slate-800">
+      <h2 class="text-lg sm:text-xl font-bold text-white mb-4 text-center">
+        Preguntas Frecuentes sobre Nuestros Servicios
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+          <h4 class="font-bold text-white mb-1.5 flex items-center gap-2">
+            <span class="text-amber-400 font-mono">01.</span>
+            <span>¿Cómo se confirma el turno?</span>
+          </h4>
+          <p class="text-slate-400 leading-relaxed">
+            Al tocar "Quiero este servicio", eliges tu fecha y hora preferida en el formulario y se te abrirá WhatsApp con el mensaje ya estructurado para enviarnos. Te respondemos de inmediato confirmando la reserva.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+          <h4 class="font-bold text-white mb-1.5 flex items-center gap-2">
+            <span class="text-amber-400 font-mono">02.</span>
+            <span>¿Qué medios de pago aceptan?</span>
+          </h4>
+          <p class="text-slate-400 leading-relaxed">
+            Aceptamos transferencias bancarias directas, Pix, tarjetas de crédito/débito, PayPal y pagos locales según tu país de residencia.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+          <h4 class="font-bold text-white mb-1.5 flex items-center gap-2">
+            <span class="text-amber-400 font-mono">03.</span>
+            <span>¿Puedo reprogramar si surge un imprevisto?</span>
+          </h4>
+          <p class="text-slate-400 leading-relaxed">
+            Sí, puedes solicitar una reprogramación avisándonos por WhatsApp con al menos 24 horas de anticipación sin ningún recargo.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+          <h4 class="font-bold text-white mb-1.5 flex items-center gap-2">
+            <span class="text-amber-400 font-mono">04.</span>
+            <span>¿Necesito tener todo preparado antes de la sesión?</span>
+          </h4>
+          <p class="text-slate-400 leading-relaxed">
+            No es necesario tener todo definido. En la sesión inicial te guiaremos paso a paso para aclarar todas tus dudas y dar inicio a tu proyecto.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-6 text-center text-xs text-slate-500 border-t border-slate-900 px-4">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p>Catálogo Oficial de Servicios y Turnos por WhatsApp</p>
+      <div class="flex items-center gap-4 text-slate-400">
+        <a href="./" class="hover:text-amber-400 transition-colors">BioLink Principal</a>
+        <span>•</span>
+        <a href="turnos.html" class="hover:text-amber-400 transition-colors">Agendar Turno</a>
+        <span>•</span>
+        <a href="https://wa.me/5548999053493" target="_blank" class="text-emerald-400 hover:text-emerald-300">WhatsApp Oficial</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script to dynamically load customized services if available from server -->
+  <script>
+    // Lee la config: primero ./clientConfig.json (valores por defecto del build) y luego,
+    // si hay Supabase, la versión publicada por el cliente (tiene prioridad).
+    async function loadClientConfig() {
+      let base = null;
+      for (const u of ['./clientConfig.json', '/api/config']) {
+        try {
+          const res = await fetch(u, { cache: 'no-cache' });
+          if (!res.ok) continue;
+          base = await res.json();
+          break;
+        } catch (e) { /* probar la siguiente */ }
+      }
+      const sb = base && base._supabase;
+      if (sb && sb.url && sb.anonKey) {
+        try {
+          const res = await fetch(sb.url + '/rest/v1/sites?site_id=eq.' + encodeURIComponent(sb.siteId) + '&select=config', {
+            headers: { apikey: sb.anonKey, Authorization: 'Bearer ' + sb.anonKey },
+          });
+          if (res.ok) {
+            const rows = await res.json();
+            const remote = rows[0] && rows[0].config;
+            if (remote && Object.keys(remote).length > 0) {
+              base = Object.assign({}, base, remote);
+            }
+          }
+        } catch (e) { /* se queda con la config del build */ }
+      }
+      return base;
+    }
+    (async function loadDynamicServices() {
+      try {
+        const config = await loadClientConfig();
+        if (!config) return;
+        const waSocial = config.profile?.socialLinks?.find(s => s.platform === 'whatsapp' && s.active);
+        const waM = waSocial?.url?.match(/wa\.me\/(\d+)/) || waSocial?.url?.match(/phone=(\d+)/);
+        const waDigits = waM ? waM[1] : '';
+        if (waDigits) document.querySelectorAll('a[href^="https://wa.me/"]').forEach(a => { a.href = 'https://wa.me/' + waDigits; });
+        const services = config.services || config.profile?.services;
+        if (!services || !Array.isArray(services) || services.length === 0) return;
+
+        const activeServices = services.filter(s => s.active !== false);
+        if (activeServices.length === 0) return;
+
+        const container = document.getElementById('servicesContainer');
+        container.innerHTML = activeServices.map((srv, index) => {
+          const isFeatured = index === 0;
+          const badgeHtml = srv.badge 
+            ? `<span class="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full ${isFeatured ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-slate-800 text-slate-300 border border-slate-700'} uppercase">${srv.badge}</span>`
+            : '';
+
+          const btnClass = isFeatured
+            ? 'w-full py-3.5 px-4 rounded-2xl font-bold text-xs bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 transition-all shadow-lg shadow-amber-500/20 text-center flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]'
+            : 'w-full py-3.5 px-4 rounded-2xl font-bold text-xs bg-slate-800 hover:bg-slate-750 text-white transition-all text-center flex items-center justify-center gap-2 cursor-pointer border border-slate-700 hover:border-amber-500/40';
+
+          return `
+            <div class="service-card flex flex-col justify-between p-6 rounded-3xl bg-slate-900/90 border ${isFeatured ? 'border-amber-500/40' : 'border-slate-800'} hover:border-amber-500/50 shadow-xl backdrop-blur-md relative overflow-hidden group">
+              <div>
+                <div class="flex items-start justify-between gap-3 mb-4">
+                  <div class="w-12 h-12 rounded-2xl ${isFeatured ? 'bg-amber-500/15 border-amber-500/30' : 'bg-slate-800 border-slate-700'} flex items-center justify-center text-2xl shadow-inner">
+                    ${srv.icon || '💼'}
+                  </div>
+                  ${badgeHtml}
+                </div>
+
+                <h3 class="text-lg font-bold text-white mb-1.5 group-hover:text-amber-400 transition-colors">
+                  ${srv.name}
+                </h3>
+                <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+                  ${srv.description || 'Atención profesional personalizada adaptada a tu requerimiento.'}
+                </p>
+
+                <div class="flex items-baseline gap-2 mb-4 pb-4 border-b border-slate-800">
+                  <span class="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono">${srv.price || 'A convenir'}</span>
+                  ${srv.duration ? `<span class="text-xs text-slate-400">/ ${srv.duration}</span>` : ''}
+                </div>
+
+                <ul class="space-y-2 text-xs text-slate-300 mb-6">
+                  ${srv.duration ? `<li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span><span>Duración estimada: ${srv.duration}</span></li>` : ''}
+                  <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span><span>Confirmación directa por WhatsApp</span></li>
+                  <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span><span>Atención personalizada garantizada</span></li>
+                </ul>
+              </div>
+
+              <a href="turnos.html?servicio=${encodeURIComponent(srv.name)}" class="${btnClass}">
+                <span>Quiero este servicio</span>
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+              </a>
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        console.warn('Fallback a servicios estáticos', e);
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -19,6 +19,7 @@ import { LinkButton } from './components/LinkButton';
 import { AdminModal } from './components/AdminModal';
 import { QRCodeModal } from './components/QRCodeModal';
 import { VideoPlayerModal } from './components/VideoPlayerModal';
+import { AppointmentModal } from './components/AppointmentModal';
 import { PWAInstallButton } from './components/PWAInstallButton';
 import { OfflineIndicator } from './components/OfflineIndicator';
 
@@ -32,9 +33,20 @@ export default function App() {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   // Filter category
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  // Compute WhatsApp number for appointments from social links or default
+  const whatsappBookingNumber = React.useMemo(() => {
+    const wa = profile.socialLinks?.find((s) => s.platform === 'whatsapp' && s.active && s.url);
+    if (wa?.url) {
+      const match = wa.url.match(/wa\.me\/(\d+)/i) || wa.url.match(/(\d{9,15})/);
+      if (match && match[1]) return match[1];
+    }
+    return '5548999053493';
+  }, [profile.socialLinks]);
 
   // Load and record visit once
   useEffect(() => {
@@ -47,6 +59,19 @@ export default function App() {
     setProfile(loadedProfile);
     setTheme(loadedTheme);
     setAnalytics(updatedAnalytics);
+
+    // Configuración publicada en Supabase: es la que ven todos los visitantes
+    storageService.fetchRemoteConfig().then((remote) => {
+      if (!remote) return;
+      if (remote.links) setLinks(remote.links);
+      if (remote.profile) setProfile(remote.profile);
+      if (remote.theme) setTheme(remote.theme);
+    });
+
+    // Open booking modal if hash is #turnos
+    if (typeof window !== 'undefined' && (window.location.hash === '#turnos' || window.location.hash === '#booking')) {
+      setIsBookingOpen(true);
+    }
   }, []);
 
   // Dynamically sync Document Title, Meta tags, PWA icon & favicon when profile changes
@@ -92,6 +117,12 @@ export default function App() {
     const { updatedAnalytics, updatedLinks } = storageService.recordClick(link.id, link.title);
     setAnalytics(updatedAnalytics);
     setLinks(updatedLinks);
+
+    // If it's a booking / turno link, open the appointment modal!
+    if (link.url === '#turnos' || link.url === '#booking' || link.id === 'link-turnos-whatsapp') {
+      setIsBookingOpen(true);
+      return;
+    }
 
     // Open target link
     if (link.url) {
@@ -387,6 +418,15 @@ export default function App() {
         onClose={() => setIsShareOpen(false)}
         url={currentUrl}
         title={profile.name}
+      />
+
+      {/* WhatsApp Appointment Booking Modal */}
+      <AppointmentModal
+        isOpen={isBookingOpen}
+        onClose={() => setIsBookingOpen(false)}
+        whatsappNumber={whatsappBookingNumber}
+        brandName={profile.name || 'Atención al Cliente'}
+        services={profile.services}
       />
 
       {/* Video Player Modal */}

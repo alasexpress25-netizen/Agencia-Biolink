@@ -1,19 +1,19 @@
 {
   "profile": {
-    "name": "El Amor Traspasa",
-    "appName": "El Amor Traspasa",
-    "browserTabTitle": "BioLink - El Amor Traspasa",
-    "metaDescription": "Página oficial de enlaces, comunidad y transmisiones de El Amor Traspasa.",
-    "handle": "@elamortraspasa",
-    "bio": "Cruzando fronteras con amor, esperanza y transformación. Conéctate con nuestra comunidad, proyectos solidarios y transmisiones en vivo.",
+    "name": "Unhas Imbituba",
+    "appName": "Thays Biolink",
+    "browserTabTitle": "Thays Unhas",
+    "metaDescription": "Nossos link",
+    "handle": "@thayanacletounhas",
+    "bio": "Esmaltação em gel e poda - Técnica Russa - Te entrego una cutícula impecáble",
     "avatarUrl": "https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&auto=format&fit=crop&q=80",
-    "verified": true,
-    "location": "Comunidad Global • Internacional",
-    "footerText": "© El Amor Traspasa • Cruzando Fronteras con Amor",
+    "verified": false,
+    "location": "Alto Arroio - Imbituba",
+    "footerText": "© Thays Anacleto unhas • Unhas Perfeitas",
     "featuredMedia": {
       "enabled": true,
-      "title": "Último Mensaje: El Amor Nunca Se Rinde",
-      "subtitle": "Míralo ahora en YouTube • Domingos en Vivo",
+      "title": "Uhnas esmaltadas",
+      "subtitle": "Míralo ahora en YouTube ",
       "tag": "DESTACADO",
       "videoUrl": "https://www.youtube.com",
       "thumbnailUrl": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80"
@@ -23,7 +23,7 @@
         "id": "soc-1",
         "platform": "whatsapp",
         "label": "WhatsApp",
-        "url": "https://wa.me/34600000000?text=Hola%20El%20Amor%20Traspasa,%20quiero%20conectar",
+        "url": "https://wa.me/5548999053493?text=Hola%20Thays,%20quiero%20saber",
         "active": true
       },
       {
@@ -41,20 +41,6 @@
         "active": true
       },
       {
-        "id": "soc-4",
-        "platform": "spotify",
-        "label": "Spotify",
-        "url": "https://open.spotify.com",
-        "active": true
-      },
-      {
-        "id": "soc-5",
-        "platform": "tiktok",
-        "label": "TikTok",
-        "url": "https://tiktok.com/@elamortraspasa",
-        "active": true
-      },
-      {
         "id": "soc-6",
         "platform": "email",
         "label": "Contacto",
@@ -64,111 +50,199 @@
     ],
     "customTexts": {
       "topBarButtonText": "Configurar",
-      "topBarLiveBadge": "clics en vivo",
-      "shareModalButtonText": "Ver Código QR & Compartir",
+      "topBarLiveBadge": "clique ao vivo",
+      "shareModalButtonText": "Ver Código QR e Compartilhar",
       "categoryAll": "Todos",
-      "categoryCommunity": "Comunidad",
-      "categoryMultimedia": "Transmisiones",
-      "categoryDonations": "Donaciones",
+      "categoryCommunity": "",
+      "categoryMultimedia": "",
+      "categoryDonations": "",
       "emptyStateText": "No hay enlaces en esta categoría.",
-      "verifiedBadgeText": "Cuenta Oficial Verificada"
+      "verifiedBadgeText": "Cursos e atendimento"
     },
-    "pwaIconUrl": "pwa-512x512.png",
+    "pwaIconUrl": "https://images.unsplash.com/photo-1519817650390-64a93db51149?w=400&auto=format&fit=crop&q=80",
     "companyBranding": {
       "enabled": true,
-      "name": "LA VISUAL MARKETING",
+      "name": "LA VISUAL MARKETING - Federico Sebastián Allan",
       "logoUrl": "la-visual-marketing.png",
       "websiteUrl": "https://lavisualmk.alastecno.com",
       "label": "Desarrollado & Diseñado por"
     },
     "categoryFilters": {
-      "enabled": true,
-      "activeCategories": ["all", "community", "multimedia", "donations"]
-    }
+      "enabled": false,
+      "activeCategories": [
+        "all",
+        "community",
+        "multimedia",
+        "donations"
+      ]
+    },
+    "services": [
+      {
+        "id": "srv-1",
+        "name": "Asesoría Personalizada",
+        "duration": "45 min",
+        "price": "$50 USD",
+        "description": "Sesión 1 a 1 de consultoría estratégica, análisis de requerimientos y plan de acción inmediato.",
+        "icon": "💼",
+        "badge": "MÁS ELEGIDO",
+        "active": true
+      },
+      {
+        "id": "srv-2",
+        "name": "Consulta / Turno General",
+        "duration": "30 min",
+        "price": "$30 USD",
+        "description": "Atención general, dudas técnicas o comerciales y diagnóstico inicial.",
+        "icon": "🗓️",
+        "badge": "RÁPIDO",
+        "active": true
+      },
+      {
+        "id": "srv-3",
+        "name": "Presupuesto de Proyecto",
+        "duration": "30 min",
+        "price": "Gratis",
+        "description": "Evaluación personalizada sin costo para sitios web, tiendas online y marketing digital.",
+        "icon": "📊",
+        "badge": "SIN COSTO",
+        "active": true
+      },
+      {
+        "id": "srv-4",
+        "name": "Reunión Virtual (Online)",
+        "duration": "45 min",
+        "price": "$45 USD",
+        "description": "Videollamada por Google Meet / Zoom con pantalla compartida y asesoramiento en vivo.",
+        "icon": "💻",
+        "badge": "ONLINE",
+        "active": true
+      },
+      {
+        "id": "srv-5",
+        "name": "Turno Presencial",
+        "duration": "60 min",
+        "price": "$65 USD",
+        "description": "Encuentro presencial para coordinación integral, firma de acuerdos y revisión.",
+        "icon": "📍",
+        "badge": "PRESENCIAL",
+        "active": true
+      }
+    ]
   },
+  "services": [
+    {
+      "id": "srv-1",
+      "name": "Asesoría Personalizada",
+      "duration": "45 min",
+      "price": "$50 USD",
+      "description": "Sesión 1 a 1 de consultoría estratégica, análisis de requerimientos y plan de acción inmediato.",
+      "icon": "💼",
+      "badge": "MÁS ELEGIDO",
+      "active": true
+    },
+    {
+      "id": "srv-2",
+      "name": "Consulta / Turno General",
+      "duration": "30 min",
+      "price": "$30 USD",
+      "description": "Atención general, dudas técnicas o comerciales y diagnóstico inicial.",
+      "icon": "🗓️",
+      "badge": "RÁPIDO",
+      "active": true
+    },
+    {
+      "id": "srv-3",
+      "name": "Presupuesto de Proyecto",
+      "duration": "30 min",
+      "price": "Gratis",
+      "description": "Evaluación personalizada sin costo para sitios web, tiendas online y marketing digital.",
+      "icon": "📊",
+      "badge": "SIN COSTO",
+      "active": true
+    },
+    {
+      "id": "srv-4",
+      "name": "Reunión Virtual (Online)",
+      "duration": "45 min",
+      "price": "$45 USD",
+      "description": "Videollamada por Google Meet / Zoom con pantalla compartida y asesoramiento en vivo.",
+      "icon": "💻",
+      "badge": "ONLINE",
+      "active": true
+    },
+    {
+      "id": "srv-5",
+      "name": "Turno Presencial",
+      "duration": "60 min",
+      "price": "$65 USD",
+      "description": "Encuentro presencial para coordinación integral, firma de acuerdos y revisión.",
+      "icon": "📍",
+      "badge": "PRESENCIAL",
+      "active": true
+    }
+  ],
   "links": [
     {
       "id": "link-whatsapp-group",
-      "title": "Comunidad Oficial en WhatsApp",
-      "subtitle": "Mensajes inspiradores diarios y anuncios exclusivos",
-      "url": "https://chat.whatsapp.com/sampleInviteCode",
+      "title": "Comunidade Oficial no WhatsApp",
+      "subtitle": "Mensagens, Consultas e outros",
+      "url": "https://wa.me/5548999053493",
       "icon": "whatsapp",
-      "iconType": "custom",
-      "customImageUrl": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%2325D366'/><path fill='white' d='M50 20C33.4 20 20 33.4 20 50c0 5.3 1.4 10.3 3.8 14.7L20 80l15.7-3.7C40 78.6 44.9 80 50 80c16.6 0 30-13.4 30-30S66.6 20 50 20zm14.7 42.4c-.6 1.7-3.5 3.3-4.9 3.5-1.3.2-3 .3-8.8-2.1-7.4-3-12.2-10.5-12.6-11-.4-.5-3.1-4.1-3.1-7.8s2-5.5 2.7-6.2c.7-.7 1.6-.9 2.1-.9.5 0 1.1 0 1.6.1.5.1 1.2-.2 1.8 1.4.7 1.6 2.3 5.6 2.5 6 .2.4.3.9.1 1.4-.2.5-.5.9-.8 1.3-.3.4-.7.9-.9 1.2-.3.3-.6.7-.3 1.3.4.6 1.6 2.6 3.4 4.3 2.4 2.1 4.4 2.8 5 3.1.6.3 1 .3 1.4-.2.4-.5 1.7-2 2.2-2.7.5-.7.9-.6 1.5-.4.6.2 3.8 1.8 4.4 2.1.6.3 1.1.5 1.2.8.2.2.2 1.6-.4 3.3z'/></svg>",
-      "pop3d": {
-        "enabled": true,
-        "foregroundMotion": "float",
-        "popIntensity": "medium",
-        "backgroundStyle": "darkened",
-        "interactiveTilt": true
-      },
       "badge": {
         "text": "MÁS POPULAR",
         "color": "emerald"
       },
       "animation": "pulse",
       "active": true,
-      "clicks": 1420,
+      "clicks": 0,
       "isPinned": true,
-      "category": "community"
+      "category": "community",
+      "iconType": "custom",
+      "customImageUrl": "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 120 120\">\n      <defs>\n        <radialGradient id=\"waGrad\" cx=\"35%\" cy=\"30%\" r=\"70%\">\n          <stop offset=\"0%\" stop-color=\"%234ade80\"/>\n          <stop offset=\"50%\" stop-color=\"%2322c55e\"/>\n          <stop offset=\"90%\" stop-color=\"%2315803d\"/>\n          <stop offset=\"100%\" stop-color=\"%2314532d\"/>\n        </radialGradient>\n        <radialGradient id=\"waHighlight\" cx=\"30%\" cy=\"20%\" r=\"50%\">\n          <stop offset=\"0%\" stop-color=\"%23ffffff\" stop-opacity=\"0.8\"/>\n          <stop offset=\"60%\" stop-color=\"%23ffffff\" stop-opacity=\"0\"/>\n        </radialGradient>\n        <filter id=\"waShadow\" x=\"-20%\" y=\"-20%\" width=\"150%\" height=\"150%\">\n          <feDropShadow dx=\"0\" dy=\"8\" stdDeviation=\"6\" flood-color=\"%2314532d\" flood-opacity=\"0.5\"/>\n        </filter>\n      </defs>\n      <circle cx=\"60\" cy=\"60\" r=\"46\" fill=\"url(%23waGrad)\" filter=\"url(%23waShadow)\"/>\n      <ellipse cx=\"48\" cy=\"36\" rx=\"28\" ry=\"16\" fill=\"url(%23waHighlight)\"/>\n      <path d=\"M42 40 C42 40 46 48 50 52 C54 56 62 60 62 60 L68 54 C69 53 71 53 73 54 L81 58 C83 59 84 62 83 64 C81 72 72 78 64 78 C52 78 38 64 38 52 C38 44 44 35 52 33 C54 32 57 33 58 35 L62 43 C63 45 63 47 62 48 Z\" fill=\"%23ffffff\" filter=\"drop-shadow(0px 3px 4px rgba(0,0,0,0.3))\"/>\n    </svg>",
+      "pop3d": {
+        "enabled": true,
+        "foregroundMotion": "bounce",
+        "popIntensity": "medium",
+        "backgroundStyle": "darkened",
+        "interactiveTilt": true,
+        "isAvatarPhoto": false
+      }
     },
     {
       "id": "link-youtube-live",
-      "title": "Transmisión en Vivo Domingos",
-      "subtitle": "Únete a las 11:00 AM (España / Madrid) en YouTube",
-      "url": "https://youtube.com/@elamortraspasa/live",
+      "title": "Transmissão ao vivo",
+      "subtitle": "Junte-se",
+      "url": "https://youtube.com/@thaisanacletovivo",
       "icon": "video",
-      "iconType": "custom",
-      "customImageUrl": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23FF0000'/><polygon points='40,32 70,50 40,68' fill='white'/></svg>",
-      "pop3d": {
-        "enabled": true,
-        "foregroundMotion": "pulse",
-        "popIntensity": "medium",
-        "backgroundStyle": "darkened",
-        "interactiveTilt": true
-      },
       "badge": {
         "text": "EN VIVO",
         "color": "red"
       },
       "animation": "glow",
       "active": true,
-      "clicks": 980,
+      "clicks": 0,
       "isPinned": true,
-      "category": "multimedia"
-    },
-    {
-      "id": "link-donations",
-      "title": "Siembra y Donaciones Solidarias",
-      "subtitle": "Apoya nuestros comedores sociales y proyectos de ayuda humanitaria",
-      "url": "https://donorbox.org/sample-elamortraspasa",
-      "icon": "heart",
+      "category": "multimedia",
       "iconType": "custom",
-      "customImageUrl": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='heartGrad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23fb7185'/><stop offset='100%25' stop-color='%23e11d48'/></linearGradient></defs><circle cx='50' cy='50' r='46' fill='url(%23heartGrad)'/><path fill='white' d='M50 72s-22-13.5-22-29.2c0-8.2 6.6-14.8 14.8-14.8 4.6 0 8.7 2.1 11.2 5.4 2.5-3.3 6.6-5.4 11.2-5.4 8.2 0 14.8 6.6 14.8 14.8C72 58.5 50 72 50 72z'/></svg>",
+      "customImageUrl": "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=400&auto=format&fit=crop&q=80",
       "pop3d": {
         "enabled": true,
-        "foregroundMotion": "float",
-        "popIntensity": "subtle",
+        "foregroundMotion": "pulse",
+        "popIntensity": "medium",
         "backgroundStyle": "darkened",
-        "interactiveTilt": true
-      },
-      "badge": {
-        "text": "SOLIDARIDAD",
-        "color": "rose"
-      },
-      "animation": "none",
-      "active": true,
-      "clicks": 654,
-      "category": "donations"
+        "interactiveTilt": true,
+        "isAvatarPhoto": true,
+        "avatarShape": "squircle"
+      }
     },
     {
       "id": "link-courses",
-      "title": "Cursos y Clases de Formación",
-      "subtitle": "Aprende con nuestros docentes y mentores dedicados",
-      "url": "https://elamortraspasa.com/cursos",
+      "title": "Cursos e Aulas de Formação",
+      "subtitle": "Aprenda com nossos cursos",
+      "url": "cursos.html",
       "icon": "book",
       "iconType": "custom",
-      "customImageUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
+      "customImageUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80",
       "pop3d": {
         "enabled": true,
         "isAvatarPhoto": true,
@@ -184,127 +258,62 @@
         "text": "DOCENTES",
         "color": "amber"
       },
-      "animation": "none",
+      "animation": "bounce",
       "active": true,
-      "clicks": 720,
+      "clicks": 2,
       "category": "community"
-    },
-    {
-      "id": "link-prayer",
-      "title": "Peticiones de Oración y Acompañamiento",
-      "subtitle": "Nuestro equipo pastoral ora por ti confidencialmente",
-      "url": "https://wa.me/34600000000?text=Hola,%20deseo%20hacer%20una%20peticion%20de%20oracion",
-      "icon": "sparkles",
-      "badge": {
-        "text": "CONFIDENCIAL",
-        "color": "amber"
-      },
-      "animation": "none",
-      "active": true,
-      "clicks": 532,
-      "category": "community"
-    },
-    {
-      "id": "link-podcast",
-      "title": "Podcast: El Amor Traspasa en Spotify",
-      "subtitle": "Reflexiones y prédicas en cualquier momento de tu día",
-      "url": "https://open.spotify.com/show/sample-podcast",
-      "icon": "music",
-      "badge": {
-        "text": "NUEVO EPISODIO",
-        "color": "purple"
-      },
-      "animation": "none",
-      "active": true,
-      "clicks": 418,
-      "category": "multimedia"
-    },
-    {
-      "id": "link-events",
-      "title": "Próximos Eventos y Retiros 2026",
-      "subtitle": "Calendario de actividades presenciales y virtuales",
-      "url": "https://elamortraspasa.com/eventos",
-      "icon": "calendar",
-      "badge": {
-        "text": "ABRIL 2026",
-        "color": "blue"
-      },
-      "animation": "none",
-      "active": true,
-      "clicks": 375,
-      "category": "general"
-    },
-    {
-      "id": "link-official-site",
-      "title": "Sitio Web Oficial El Amor Traspasa",
-      "subtitle": "Conoce nuestra historia, equipo y sedes en el mundo",
-      "url": "https://elamortraspasa.com",
-      "icon": "globe",
-      "animation": "none",
-      "active": true,
-      "clicks": 290,
-      "category": "general"
     }
   ],
   "theme": {
-    "presetId": "elamor",
+    "presetId": "oasis",
     "bgType": "gradient",
-    "bgGradient": "from-amber-950 via-slate-950 to-rose-950",
-    "bgSolidColor": "#0f172a",
+    "bgGradient": "from-emerald-950 via-teal-950 to-slate-950",
+    "bgSolidColor": "#022c22",
     "cardStyle": "glass",
-    "cardBgColor": "rgba(255, 255, 255, 0.08)",
-    "cardTextColor": "#ffffff",
-    "cardBorderColor": "rgba(245, 158, 11, 0.35)",
-    "accentColor": "#f59e0b",
+    "cardBgColor": "rgba(6, 78, 59, 0.45)",
+    "cardTextColor": "#ecfdf5",
+    "cardBorderColor": "rgba(16, 185, 129, 0.3)",
+    "accentColor": "#10b981",
     "borderRadius": "rounded-2xl",
     "fontStyle": "sans",
     "buttonHoverEffect": "scale",
     "showBackgroundBubbles": true,
     "buttonSpacing": "normal",
-    "buttonGapPx": 20
+    "buttonGapPx": 42
   },
-  "password": "admin123",
   "analytics": {
-    "totalVisits": 5840,
-    "totalClicks": 5389,
+    "totalVisits": 33,
+    "totalClicks": 2,
     "recentEvents": [
       {
-        "id": "ev-1",
-        "linkId": "link-whatsapp-group",
-        "linkTitle": "Comunidad Oficial en WhatsApp",
-        "timestamp": 1741700000000,
-        "device": "mobile",
-        "referrer": "WhatsApp"
-      },
-      {
-        "id": "ev-2",
-        "linkId": "link-youtube-live",
-        "linkTitle": "Transmisión en Vivo Domingos",
-        "timestamp": 1741699000000,
-        "device": "mobile",
-        "referrer": "Instagram"
-      },
-      {
-        "id": "ev-3",
-        "linkId": "link-donations",
-        "linkTitle": "Siembra y Donaciones Solidarias",
-        "timestamp": 1741698000000,
+        "id": "ev-1794425596521-2wti",
+        "linkId": "link-courses",
+        "linkTitle": "Cursos e Aulas de Formação",
+        "timestamp": 1794425596521,
         "device": "desktop",
-        "referrer": "Directo"
+        "referrer": "TikTok"
+      },
+      {
+        "id": "ev-1794425586812-z91d",
+        "linkId": "link-courses",
+        "linkTitle": "Cursos e Aulas de Formação",
+        "timestamp": 1794425586812,
+        "device": "desktop",
+        "referrer": "Instagram"
       }
     ],
     "referrerCounts": {
-      "WhatsApp": 1840,
-      "Instagram": 1420,
-      "Directo": 780,
-      "TikTok": 420,
-      "YouTube": 154,
-      "Google": 55
+      "WhatsApp": 0,
+      "Instagram": 1,
+      "Directo": 0,
+      "TikTok": 1,
+      "YouTube": 0,
+      "Google": 0
     },
     "deviceCounts": {
-      "mobile": 3820,
-      "desktop": 710,
-      "tablet": 139
+      "mobile": 0,
+      "desktop": 2,
+      "tablet": 0
     }
   }
 }

@@ -1,24 +1,68 @@
 import { LinkItem, ProfileConfig, ThemeConfig, AnalyticsData, AnalyticsEvent } from '../types';
-import { DEFAULT_LINKS, DEFAULT_PROFILE, THEME_PRESETS, INITIAL_ANALYTICS } from '../data/defaultData';
+import { DEFAULT_LINKS, DEFAULT_PROFILE, THEME_PRESETS } from '../data/defaultData';
+import { supabase, SITE_ID } from './supabase';
 
 const STORAGE_KEYS = {
   LINKS: 'elamor_biolink_links_v1',
   PROFILE: 'elamor_biolink_profile_v1',
   THEME: 'elamor_biolink_theme_v1',
-  PASSWORD: 'elamor_biolink_admin_pwd_v1',
   ANALYTICS: 'elamor_biolink_analytics_v1',
 };
 
-const DEFAULT_PASSWORD = 'admin123';
-
 let syncTimeout: ReturnType<typeof setTimeout> | null = null;
+let applyingRemote = false; // evita re-guardar lo que acabamos de bajar del servidor
 
-function triggerAutoSyncToDisk(service: typeof storageService) {
+export type SyncStatus = 'saving' | 'saved' | 'error';
+function emitSync(status: SyncStatus, message?: string) {
   if (typeof window === 'undefined') return;
+  window.dispatchEvent(new CustomEvent('biolink-sync', { detail: { status, message } }));
+}
+
+// Guarda automáticamente en Supabase (solo si hay un administrador con sesión iniciada)
+function triggerAutoSync(service: typeof storageService) {
+  if (typeof window === 'undefined' || applyingRemote || !supabase) return;
   if (syncTimeout) clearTimeout(syncTimeout);
   syncTimeout = setTimeout(() => {
-    service.saveToDiskServer().catch(() => {});
-  }, 350);
+    service.saveRemoteConfig().catch(() => {});
+  }, 800);
+}
+
+function detectDevice(): 'mobile' | 'desktop' | 'tablet' {
+  const width = typeof window !== 'undefined' ? window.innerWidth : 768;
+  return width < 640 ? 'mobile' : width < 1024 ? 'tablet' : 'desktop';
+}
+
+// Origen REAL del visitante (?utm_source=... / ?ref=... / document.referrer)
+function detectReferrer(): string {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const raw = (params.get('utm_source') || params.get('ref') || params.get('src') || '').toLowerCase()
+      || (document.referrer ? new URL(document.referrer).hostname.toLowerCase() : '');
+    if (!raw || raw.includes(window.location.hostname)) return 'Directo';
+    if (raw.includes('whatsapp') || raw.includes('wa.me')) return 'WhatsApp';
+    if (raw.includes('instagram')) return 'Instagram';
+    if (raw.includes('tiktok')) return 'TikTok';
+    if (raw.includes('youtube') || raw.includes('youtu.be')) return 'YouTube';
+    if (raw.includes('facebook') || raw.includes('fb.')) return 'Facebook';
+    if (raw.includes('google')) return 'Google';
+    return 'Otro';
+  } catch {
+    return 'Directo';
+  }
+}
+
+function sendTrack(kind: 'visit' | 'click', linkId?: string, linkTitle?: string, device = detectDevice(), referrer = detectReferrer()) {
+  if (!supabase) return;
+  supabase
+    .rpc('track_event', {
+      p_site_id: SITE_ID,
+      p_kind: kind,
+      p_link_id: linkId ?? null,
+      p_link_title: linkTitle ?? null,
+      p_device: device,
+      p_referrer: referrer,
+    })
+    .then(() => {}, () => {});
 }
 
 export const storageService = {
@@ -40,7 +84,7 @@ export const storageService = {
   saveLinks(links: LinkItem[]): void {
     try {
       localStorage.setItem(STORAGE_KEYS.LINKS, JSON.stringify(links));
-      triggerAutoSyncToDisk(this);
+      triggerAutoSync(this);
     } catch (e) {
       console.error('Error saving links', e);
     }
@@ -66,6 +110,7 @@ export const storageService = {
             ...DEFAULT_PROFILE.categoryFilters!,
             ...(parsed.categoryFilters || {}),
           },
+          services: parsed.services && Array.isArray(parsed.services) ? parsed.services : DEFAULT_PROFILE.services,
         };
       }
     } catch (e) {
@@ -77,7 +122,7 @@ export const storageService = {
   saveProfile(profile: ProfileConfig): void {
     try {
       localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(profile));
-      triggerAutoSyncToDisk(this);
+      triggerAutoSync(this);
     } catch (e) {
       console.error('Error saving profile', e);
     }
@@ -104,36 +149,10 @@ export const storageService = {
   saveTheme(theme: ThemeConfig): void {
     try {
       localStorage.setItem(STORAGE_KEYS.THEME, JSON.stringify(theme));
-      triggerAutoSyncToDisk(this);
+      triggerAutoSync(this);
     } catch (e) {
       console.error('Error saving theme', e);
     }
-  },
-
-  getPassword(): string {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEYS.PASSWORD);
-      if (stored) {
-        return stored;
-      }
-    } catch (e) {
-      console.error('Error loading password', e);
-    }
-    return DEFAULT_PASSWORD;
-  },
-
-  savePassword(newPassword: string): void {
-    try {
-      localStorage.setItem(STORAGE_KEYS.PASSWORD, newPassword);
-      triggerAutoSyncToDisk(this);
-    } catch (e) {
-      console.error('Error saving password', e);
-    }
-  },
-
-  verifyPassword(input: string): boolean {
-    const current = this.getPassword();
-    return input.trim() === current.trim();
   },
 
   getAnalytics(): AnalyticsData {
@@ -145,75 +164,51 @@ export const storageService = {
     } catch (e) {
       console.error('Error loading analytics', e);
     }
-    return INITIAL_ANALYTICS;
+    return {
+      totalVisits: 0,
+      totalClicks: 0,
+      recentEvents: [],
+      referrerCounts: {},
+      deviceCounts: { mobile: 0, desktop: 0, tablet: 0 },
+    };
   },
 
   saveAnalytics(data: AnalyticsData): void {
     try {
       localStorage.setItem(STORAGE_KEYS.ANALYTICS, JSON.stringify(data));
-      triggerAutoSyncToDisk(this);
     } catch (e) {
       console.error('Error saving analytics', e);
     }
   },
 
+  // Visita REAL: se registra en Supabase (el contador local solo es un reflejo para el panel)
   recordVisit(): AnalyticsData {
+    // Una visita por sesión de pestaña (recargar no infla el contador)
+    try {
+      if (!sessionStorage.getItem('biolink_visit_sent')) {
+        sessionStorage.setItem('biolink_visit_sent', '1');
+        sendTrack('visit');
+      }
+    } catch {
+      sendTrack('visit');
+    }
     const current = this.getAnalytics();
-    const updated: AnalyticsData = {
-      ...current,
-      totalVisits: (current.totalVisits || 0) + 1,
-    };
-    this.saveAnalytics(updated);
-    return updated;
+    return current;
   },
 
+  // Clic REAL: se registra en Supabase con dispositivo y origen reales
   recordClick(linkId: string, linkTitle: string): { updatedAnalytics: AnalyticsData; updatedLinks: LinkItem[] } {
+    const device = detectDevice();
+    const referrer = detectReferrer();
+    sendTrack('click', linkId, linkTitle, device, referrer);
+
+    // Reflejo local inmediato (se reemplaza por los datos del servidor al abrir el panel)
     const currentAnalytics = this.getAnalytics();
-    const currentLinks = this.getLinks();
-
-    // Determine device
-    const width = typeof window !== 'undefined' ? window.innerWidth : 768;
-    const device: 'mobile' | 'desktop' | 'tablet' = width < 640 ? 'mobile' : width < 1024 ? 'tablet' : 'desktop';
-
-    // Simulate / detect referrer pool
-    const referrers: Array<'WhatsApp' | 'Instagram' | 'Directo' | 'TikTok' | 'YouTube' | 'Google'> = [
-      'WhatsApp', 'Instagram', 'Directo', 'TikTok', 'YouTube', 'Google'
-    ];
-    const randomReferrer = referrers[Math.floor(Math.random() * referrers.length)];
-
-    const newEvent: AnalyticsEvent = {
-      id: `ev-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-      linkId,
-      linkTitle,
-      timestamp: Date.now(),
-      device,
-      referrer: randomReferrer,
-    };
-
-    const updatedLinks = currentLinks.map(l => {
-      if (l.id === linkId) {
-        return { ...l, clicks: (l.clicks || 0) + 1 };
-      }
-      return l;
-    });
-
+    const updatedLinks = this.getLinks().map(l => (l.id === linkId ? { ...l, clicks: (l.clicks || 0) + 1 } : l));
     const updatedAnalytics: AnalyticsData = {
       ...currentAnalytics,
       totalClicks: (currentAnalytics.totalClicks || 0) + 1,
-      recentEvents: [newEvent, ...(currentAnalytics.recentEvents || [])].slice(0, 30),
-      deviceCounts: {
-        ...currentAnalytics.deviceCounts,
-        [device]: (currentAnalytics.deviceCounts?.[device] || 0) + 1,
-      },
-      referrerCounts: {
-        ...currentAnalytics.referrerCounts,
-        [randomReferrer]: (currentAnalytics.referrerCounts?.[randomReferrer] || 0) + 1,
-      },
     };
-
-    this.saveLinks(updatedLinks);
-    this.saveAnalytics(updatedAnalytics);
-
     return { updatedAnalytics, updatedLinks };
   },
 
@@ -237,6 +232,7 @@ export const storageService = {
       },
     };
     this.saveAnalytics(freshAnalytics);
+    if (supabase) supabase.rpc('reset_analytics', { p_site_id: SITE_ID }).then(() => {}, () => {});
 
     const currentLinks = this.getLinks();
     const resetLinks = currentLinks.map((l) => ({ ...l, clicks: 0 }));
@@ -245,83 +241,92 @@ export const storageService = {
     return { freshAnalytics, resetLinks };
   },
 
-  resetAllToDefault(): {
-    links: LinkItem[];
-    profile: ProfileConfig;
-    theme: ThemeConfig;
-    password: string;
-    analytics: AnalyticsData;
-  } {
-    this.saveLinks(DEFAULT_LINKS);
-    this.saveProfile(DEFAULT_PROFILE);
-    this.saveTheme(THEME_PRESETS.elamor);
-    this.savePassword(DEFAULT_PASSWORD);
-    this.saveAnalytics(INITIAL_ANALYTICS);
-
+  // Configuración que se guarda en Supabase (sin contraseñas ni métricas; los clics viven en el servidor)
+  buildConfigPayload() {
+    const prof = this.getProfile();
     return {
-      links: DEFAULT_LINKS,
-      profile: DEFAULT_PROFILE,
-      theme: THEME_PRESETS.elamor,
-      password: DEFAULT_PASSWORD,
-      analytics: INITIAL_ANALYTICS,
+      profile: prof,
+      services: prof.services || DEFAULT_PROFILE.services,
+      links: this.getLinks().map(l => ({ ...l, clicks: 0 })),
+      theme: this.getTheme(),
     };
   },
 
+  // Copia de seguridad descargable (JSON)
   exportClientConfigFile(): string {
-    const data = {
-      profile: this.getProfile(),
-      links: this.getLinks(),
-      theme: this.getTheme(),
-      password: this.getPassword(),
-      analytics: this.getAnalytics(),
-    };
-    return JSON.stringify(data, null, 2);
+    return JSON.stringify(this.buildConfigPayload(), null, 2);
   },
 
-  async saveToDiskServer(): Promise<boolean> {
+  // ¿Hay un administrador con sesión iniciada?
+  async getSession() {
+    if (!supabase) return null;
+    const { data } = await supabase.auth.getSession();
+    return data.session;
+  },
+
+  // Baja la configuración publicada (la ven todos los visitantes) y la deja en caché local.
+  // Devuelve null si no hay Supabase, no hay fila o la config todavía está vacía.
+  async fetchRemoteConfig(): Promise<{ profile?: ProfileConfig; links?: LinkItem[]; theme?: ThemeConfig } | null> {
+    if (!supabase) return null;
     try {
-      const fullData = {
-        profile: this.getProfile(),
-        links: this.getLinks(),
-        theme: this.getTheme(),
-        password: this.getPassword(),
-        analytics: this.getAnalytics(),
-      };
-      const res = await fetch('/api/save-config', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fullData),
-      });
-      return res.ok;
+      const { data, error } = await supabase.from('sites').select('config').eq('site_id', SITE_ID).maybeSingle();
+      if (error || !data?.config || Object.keys(data.config).length === 0) return null;
+      const cfg = data.config as any;
+      applyingRemote = true;
+      try {
+        if (cfg.profile) {
+          const prof = { ...cfg.profile };
+          if (cfg.services && !prof.services) prof.services = cfg.services;
+          localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(prof));
+        }
+        if (Array.isArray(cfg.links)) localStorage.setItem(STORAGE_KEYS.LINKS, JSON.stringify(cfg.links));
+        if (cfg.theme) localStorage.setItem(STORAGE_KEYS.THEME, JSON.stringify(cfg.theme));
+      } finally {
+        applyingRemote = false;
+      }
+      return { profile: cfg.profile ? this.getProfile() : undefined, links: Array.isArray(cfg.links) ? this.getLinks() : undefined, theme: cfg.theme ? this.getTheme() : undefined };
     } catch {
-      return false;
+      return null;
     }
   },
 
-  exportFullBackup(): string {
-    const data = {
-      profile: this.getProfile(),
-      links: this.getLinks(),
-      theme: this.getTheme(),
-      analytics: this.getAnalytics(),
-      version: '1.0.0',
-      exportedAt: new Date().toISOString(),
+  // Guarda la configuración en Supabase (requiere sesión del dueño; RLS lo comprueba en el servidor)
+  async saveRemoteConfig(): Promise<{ ok: boolean; message: string }> {
+    if (!supabase) return { ok: false, message: 'Supabase no está configurado.' };
+    const session = await this.getSession();
+    if (!session) return { ok: false, message: 'Inicia sesión para guardar.' };
+    emitSync('saving');
+    const { data, error } = await supabase
+      .from('sites')
+      .update({ config: this.buildConfigPayload() })
+      .eq('site_id', SITE_ID)
+      .select('site_id');
+    if (error) {
+      emitSync('error', error.message);
+      return { ok: false, message: error.message };
+    }
+    if (!data || data.length === 0) {
+      const msg = 'Este usuario no es el dueño del sitio "' + SITE_ID + '".';
+      emitSync('error', msg);
+      return { ok: false, message: msg };
+    }
+    emitSync('saved');
+    return { ok: true, message: 'Guardado en la nube.' };
+  },
+
+  // Métricas reales desde el servidor (solo dueño)
+  async fetchRemoteAnalytics(): Promise<{ analytics: AnalyticsData; clicksByLink: Record<string, number> } | null> {
+    if (!supabase) return null;
+    const { data, error } = await supabase.rpc('get_analytics', { p_site_id: SITE_ID });
+    if (error || !data) return null;
+    const analytics: AnalyticsData = {
+      totalVisits: data.totalVisits || 0,
+      totalClicks: data.totalClicks || 0,
+      recentEvents: data.recentEvents || [],
+      referrerCounts: data.referrerCounts || {},
+      deviceCounts: { mobile: 0, desktop: 0, tablet: 0, ...(data.deviceCounts || {}) },
     };
-    return JSON.stringify(data, null, 2);
-  },
-
-  importBackup(jsonString: string): boolean {
-    try {
-      const data = JSON.parse(jsonString);
-      if (data.profile) this.saveProfile(data.profile);
-      if (Array.isArray(data.links)) this.saveLinks(data.links);
-      if (data.theme) this.saveTheme(data.theme);
-      if (data.analytics) this.saveAnalytics(data.analytics);
-      if (data.password) this.savePassword(data.password);
-      return true;
-    } catch (e) {
-      console.error('Import error', e);
-      return false;
-    }
+    this.saveAnalytics(analytics);
+    return { analytics, clicksByLink: data.clicksByLink || {} };
   },
 };

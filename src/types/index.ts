@@ -92,6 +92,17 @@ export interface CategoryFiltersConfig {
   activeCategories: string[]; // List of category IDs that should be shown (e.g. ['all', 'community', 'multimedia', 'donations', 'courses'])
 }
 
+export interface ServiceItem {
+  id: string;
+  name: string;
+  duration?: string;
+  price: string;
+  description?: string;
+  icon?: string;
+  badge?: string;
+  active: boolean;
+}
+
 export interface ProfileConfig {
   name: string;
   appName?: string;
@@ -117,6 +128,7 @@ export interface ProfileConfig {
   pwaIconUrl?: string;
   companyBranding?: CompanyBrandingConfig;
   categoryFilters?: CategoryFiltersConfig;
+  services?: ServiceItem[];
 }
 
 export type ThemePresetId = 'elamor' | 'celestial' | 'oasis' | 'midnight' | 'minimal' | 'sunset' | 'custom';
@@ -145,7 +157,7 @@ export interface AnalyticsEvent {
   linkTitle: string;
   timestamp: number;
   device: 'mobile' | 'desktop' | 'tablet';
-  referrer: 'WhatsApp' | 'Instagram' | 'Directo' | 'TikTok' | 'YouTube' | 'Google';
+  referrer: string;
 }
 
 export interface AnalyticsData {
