@@ -1,0 +1,232 @@
+{
+  "profile": {
+    "bio": "Escreva aqui uma frase curta sobre você ou seu negócio. Para mudar, abra Configurar → aba Video Destacado / Personalizar Textos.",
+    "name": "Seu Nome ou Negócio",
+    "handle": "@seuusuario",
+    "appName": "Meu BioLink",
+    "location": "Sua Cidade - UF",
+    "services": [
+      {
+        "id": "srv-1",
+        "icon": "✨",
+        "name": "Serviço de exemplo 1",
+        "badge": "MAIS PROCURADO",
+        "price": "R$ 150",
+        "active": true,
+        "duration": "60 min",
+        "description": "Troque este texto pela descrição do seu serviço. Edite em Configurar → aba Servicios & Turnos."
+      },
+      {
+        "id": "srv-2",
+        "icon": "📅",
+        "name": "Serviço de exemplo 2",
+        "badge": "RÁPIDO",
+        "price": "R$ 80",
+        "active": true,
+        "duration": "30 min",
+        "description": "Você pode mudar nome, duração, preço, ícone e selo. Também pode desativar o que não usar."
+      },
+      {
+        "id": "srv-3",
+        "icon": "🎁",
+        "name": "Serviço de exemplo 3",
+        "badge": "GRÁTIS",
+        "price": "Grátis",
+        "active": true,
+        "duration": "45 min",
+        "description": "Exemplo de serviço sem custo. Apague ou edite quando quiser."
+      }
+    ],
+    "verified": true,
+    "avatarUrl": "./avatar.jpg",
+    "footerText": "© Seu Nome • Todos os direitos reservados",
+    "pwaIconUrl": "https://images.unsplash.com/photo-1519817650390-64a93db51149?w=400&auto=format&fit=crop&q=80",
+    "customTexts": {
+      "categoryAll": "Todos",
+      "emptyStateText": "Nenhum link nesta categoria.",
+      "topBarLiveBadge": "cliques ao vivo",
+      "topBarButtonText": "Configurar",
+      "categoryCommunity": "Comunidade",
+      "categoryDonations": "Apoie",
+      "verifiedBadgeText": "Perfil de exemplo",
+      "categoryMultimedia": "Vídeos",
+      "shareModalButtonText": "Ver QR Code e Compartilhar"
+    },
+    "defaultLang": "pt",
+    "socialLinks": [
+      {
+        "id": "soc-1",
+        "url": "https://wa.me/5500000000000",
+        "label": "WhatsApp",
+        "active": true,
+        "platform": "whatsapp"
+      },
+      {
+        "id": "soc-2",
+        "url": "https://instagram.com/seuusuario",
+        "label": "Instagram",
+        "active": true,
+        "platform": "instagram"
+      },
+      {
+        "id": "soc-3",
+        "url": "https://youtube.com/@seucanal",
+        "label": "YouTube",
+        "active": true,
+        "platform": "youtube"
+      },
+      {
+        "id": "soc-4",
+        "url": "mailto:seuemail@exemplo.com",
+        "label": "Contato",
+        "active": true,
+        "platform": "email"
+      }
+    ],
+    "featuredMedia": {
+      "tag": "DESTAQUE",
+      "title": "Vídeo em destaque (exemplo)",
+      "enabled": true,
+      "subtitle": "Troque pelo link do seu vídeo do YouTube",
+      "videoUrl": "https://pub-0a20faa9d44b482b8257219d4348edef.r2.dev/c250835c-89e6-4f09-b749-fadc2d95030a/1793146576885_impacto_tv_anuncio_verao_vertical_9x16.mp4",
+      "thumbnailUrl": "https://pub-0a20faa9d44b482b8257219d4348edef.r2.dev/c250835c-89e6-4f09-b749-fadc2d95030a/1791239466144_1000609661.png"
+    },
+    "browserTabTitle": "Meu BioLink",
+    "categoryFilters": {
+      "enabled": false,
+      "activeCategories": [
+        "all",
+        "community",
+        "multimedia",
+        "donations"
+      ]
+    },
+    "companyBranding": {
+      "name": "LA VISUAL MARKETING - Federico Sebastián Allan",
+      "label": "Desenvolvido & Desenhado por",
+      "enabled": true,
+      "logoUrl": "la-visual-marketing.png",
+      "websiteUrl": "https://lavisualmk.alastecno.com"
+    },
+    "metaDescription": "Todos os meus links em um só lugar"
+  },
+  "services": [
+    {
+      "id": "srv-1",
+      "icon": "✨",
+      "name": "Serviço de exemplo 1",
+      "badge": "MAIS PROCURADO",
+      "price": "R$ 150",
+      "active": true,
+      "duration": "60 min",
+      "description": "Troque este texto pela descrição do seu serviço. Edite em Configurar → aba Servicios & Turnos."
+    },
+    {
+      "id": "srv-2",
+      "icon": "📅",
+      "name": "Serviço de exemplo 2",
+      "badge": "RÁPIDO",
+      "price": "R$ 80",
+      "active": true,
+      "duration": "30 min",
+      "description": "Você pode mudar nome, duração, preço, ícone e selo. Também pode desativar o que não usar."
+    },
+    {
+      "id": "srv-3",
+      "icon": "🎁",
+      "name": "Serviço de exemplo 3",
+      "badge": "GRÁTIS",
+      "price": "Grátis",
+      "active": true,
+      "duration": "45 min",
+      "description": "Exemplo de serviço sem custo. Apague ou edite quando quiser."
+    }
+  ],
+  "links": [
+    {
+      "id": "link-whatsapp",
+      "url": "https://wa.me/5500000000000",
+      "icon": "whatsapp",
+      "badge": {
+        "text": "EXEMPLO",
+        "color": "emerald"
+      },
+      "title": "Fale comigo no WhatsApp",
+      "active": true,
+      "clicks": 0,
+      "category": "community",
+      "iconType": "standard",
+      "isPinned": true,
+      "subtitle": "Troque pelo seu número em Configurar → aba Enlaces",
+      "animation": "pulse"
+    },
+    {
+      "id": "link-turnos-whatsapp",
+      "url": "#turnos",
+      "icon": "calendar",
+      "badge": {
+        "text": "NOVO",
+        "color": "amber"
+      },
+      "title": "Agende seu horário",
+      "active": true,
+      "clicks": 0,
+      "category": "general",
+      "iconType": "standard",
+      "subtitle": "Abre a reserva por WhatsApp com os seus serviços",
+      "animation": "glow"
+    },
+    {
+      "id": "link-instagram",
+      "url": "https://instagram.com/seuusuario",
+      "icon": "instagram",
+      "title": "Meu Instagram",
+      "active": true,
+      "clicks": 0,
+      "category": "social",
+      "iconType": "standard",
+      "subtitle": "Use as setas do painel para mudar a ordem",
+      "animation": "none"
+    },
+    {
+      "id": "link-youtube",
+      "url": "https://youtube.com/@seucanal",
+      "icon": "youtube",
+      "badge": {
+        "text": "VÍDEOS",
+        "color": "red"
+      },
+      "title": "Meu canal no YouTube",
+      "active": true,
+      "clicks": 0,
+      "category": "multimedia",
+      "iconType": "standard",
+      "subtitle": "Desative um link sem apagá-lo, quando quiser",
+      "animation": "none"
+    }
+  ],
+  "theme": {
+    "bgType": "mesh",
+    "presetId": "celestial",
+    "cardStyle": "neon",
+    "fontStyle": "sans",
+    "bgGradient": "from-indigo-950 via-slate-900 to-purple-950",
+    "accentColor": "#c084fc",
+    "buttonGapPx": 20,
+    "cardBgColor": "rgba(30, 27, 75, 0.65)",
+    "bgSolidColor": "#0b0f19",
+    "borderRadius": "rounded-xl",
+    "buttonSpacing": "normal",
+    "cardTextColor": "#f8fafc",
+    "cardBorderColor": "rgba(168, 85, 247, 0.4)",
+    "buttonHoverEffect": "glow",
+    "showBackgroundBubbles": true
+  },
+  "analytics": {
+    "totalVisits": 0,
+    "totalClicks": 0,
+    "recentEvents": [],
+    "referrerCounts": {},
+    "deviceCounts": {}
+  }
+}
