@@ -1,6 +1,7 @@
 import { LinkItem, ProfileConfig, ThemeConfig, AnalyticsData, AnalyticsEvent } from '../types';
 import { DEFAULT_LINKS, DEFAULT_PROFILE, THEME_PRESETS } from '../data/defaultData';
 import { supabase, SITE_ID } from './supabase';
+import { AVATAR_URL } from '../utils/avatar';
 
 const STORAGE_KEYS = {
   LINKS: 'elamor_biolink_links_v1',
@@ -103,6 +104,7 @@ export const storageService = {
         return {
           ...DEFAULT_PROFILE,
           ...parsed,
+          avatarUrl: AVATAR_URL,
           customTexts: {
             ...DEFAULT_PROFILE.customTexts,
             ...(parsed.customTexts || {}),

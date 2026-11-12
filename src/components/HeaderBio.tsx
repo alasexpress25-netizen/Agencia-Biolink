@@ -1,3 +1,4 @@
+import { AVATAR_URL } from '../utils/avatar';
 import React from 'react';
 import { BadgeCheck, MapPin, Share2 } from 'lucide-react';
 import { ProfileConfig, ThemeConfig } from '../types';
@@ -47,13 +48,13 @@ export const HeaderBio: React.FC<HeaderBioProps> = ({
           }}
         >
           <img
-            src={profile.avatarUrl}
+            src={AVATAR_URL}
             alt={profile.name}
             className="w-full h-full object-cover rounded-full bg-slate-900 border-2 border-slate-950"
             onError={(e) => {
               // fallback if image fails
               (e.target as HTMLImageElement).src =
-                'https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&auto=format&fit=crop&q=80';
+                `${(import.meta as any).env?.BASE_URL || './'}icon.svg`;
             }}
           />
         </div>

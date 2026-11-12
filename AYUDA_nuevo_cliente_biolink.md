@@ -19,7 +19,7 @@ Todos los clientes usan el mismo proyecto. Cada uno es una fila en la tabla `sit
 
 - [ ] Nombre del negocio y @usuario
 - [ ] Frase corta (bio) y ciudad
-- [ ] Foto o logo
+- [ ] Foto de perfil (cuadrada, se guarda como `public/avatar.jpg`) y logo
 - [ ] Número de WhatsApp **con código de país** (ej. `5548999053493`)
 - [ ] Sus redes reales (Instagram, YouTube, TikTok, etc.): **no copiar las de otro cliente**
 - [ ] Servicios: nombre, precio, duración (si no los tiene, dejar vacío; no inventar)
@@ -41,6 +41,11 @@ Todos los clientes usan el mismo proyecto. Cada uno es una fila en la tabla `sit
    - No dejar servicios, mails ni redes de otro cliente.
 
 > Atajo: personalizar todo desde el panel "Configurar" de un sitio de prueba, ir a **Copia de Seguridad** y descargar `clientConfig.json`.
+
+4. **Foto de perfil:** subir la foto del cliente al repo en `public/avatar.jpg`.
+   - El nombre es exacto: minúsculas y extensión `.jpg` (GitHub Pages distingue mayúsculas).
+   - Cuadrada y liviana (ej. 400x400 px, menos de 200 KB).
+   - Ya no se edita desde el panel: siempre se lee de ese archivo.
 
 ---
 
@@ -96,6 +101,7 @@ VITE_LOGIN_DOMAIN=lavisualmk.alastecno.com
 
 - **Importante:** cambiar `VITE_SITE_ID`. El zip base trae `agencia`.
 - Usar solo la **anon key**. **Nunca** la `service_role`.
+- **Los archivos que empiezan con punto** (`.env.production`, `.github/`) a veces **no se suben** al arrastrar archivos en la web de GitHub. Por eso el `deploy.yml` también trae estas variables en el paso *Build* (son valores públicos). Si cambiás el `VITE_SITE_ID`, cambialo **también en `.github/workflows/deploy.yml`**.
 - El dominio de `VITE_LOGIN_DOMAIN` tiene que ser el mismo que usaste en el correo del paso 2.
 
 Probar local (opcional):
@@ -126,6 +132,7 @@ npm run build
 ## 6. Revisión final (checklist)
 
 - [ ] El biolink carga con el nombre y el idioma correctos
+- [ ] La foto de perfil se ve (si no, revisar que sea `public/avatar.jpg`)
 - [ ] Botón de WhatsApp abre el chat con el número correcto
 - [ ] "Agendar horário / Agendar turno" abre el modal y manda al WhatsApp correcto
 - [ ] `turnos.html` y `servicios.html` muestran los servicios del cliente
@@ -147,6 +154,8 @@ npm run build
 
 | Síntoma | Causa probable | Solución |
 |---|---|---|
+| La foto de perfil no aparece | Falta `public/avatar.jpg` o tiene otro nombre/extensión | Subirlo exactamente como `public/avatar.jpg` y recargar con Ctrl+F5 |
+| "Falta configurar Supabase (VITE_SUPABASE_URL...)" | El build se hizo sin las variables VITE_* | Poner las variables en el paso *Build* de `.github/workflows/deploy.yml` (ver paso 3) y hacer push |
 | "Correo o contraseña incorrectos" | Usuario mal escrito o dominio distinto | Revisar que el correo en Supabase sea `usuario@<VITE_LOGIN_DOMAIN>` |
 | "Este usuario no es el dueño del sitio" | `owner_id` null o de otro usuario, o `VITE_SITE_ID` equivocado | Verificar con el SELECT del paso 2; usar `create_site(...)` |
 | El sitio muestra datos de otro cliente | `VITE_SITE_ID` quedó en `agencia` | Corregir `.env.production` y volver a publicar |
