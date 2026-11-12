@@ -54,7 +54,9 @@ export default defineConfig(({ mode }) => {
         registerType: 'autoUpdate',
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icon.svg'],
         manifest: {
-          id: '/',
+          // ID único por cliente: si dos biolinks comparten dominio, con id '/' Chrome los toma
+          // como la MISMA app y solo deja instalar uno.
+          id: `/${env.VITE_SITE_ID || 'agencia'}`,
           name: appTitle,
           short_name: appShortName,
           description: appDescription,
