@@ -1,0 +1,25 @@
+# Mantiene activo el proyecto Supabase "Biolink" (plan gratis).
+# Supabase pausa los proyectos gratuitos tras 7 días sin actividad; esto hace una consulta
+# de lectura cada 2 días. Un solo aviso sirve para TODOS los biolinks (comparten el proyecto).
+# La anon key es pública por diseño (la seguridad la da RLS); es la misma de .env.production.
+name: Keep Supabase alive
+
+on:
+  schedule:
+    - cron: '0 12 */2 * *'   # cada 2 días, 12:00 UTC
+  workflow_dispatch: {}       # también se puede lanzar a mano desde la pestaña Actions
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consulta a la API de Supabase
+        run: |
+          curl --fail --silent --show-error --max-time 30 \
+            "https://ijvyvnhvopkevybwlfms.supabase.co/rest/v1/sites?select=site_id&limit=1" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlqdnl2bmh2b3BrZXZ5YndsZm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ0MzIyMjEsImV4cCI6MjExMDAwODIyMX0.jCfJzGbKoKJT-Y2W6A9pDyTm3x_P31Pwvf1Jb2ywbVE" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlqdnl2bmh2b3BrZXZ5YndsZm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ0MzIyMjEsImV4cCI6MjExMDAwODIyMX0.jCfJzGbKoKJT-Y2W6A9pDyTm3x_P31Pwvf1Jb2ywbVE"
+          echo
+          echo "OK - Supabase respondió"
