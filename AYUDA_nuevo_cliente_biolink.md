@@ -150,10 +150,21 @@ npm run build
 
 ---
 
+## Contador de clics y estadísticas
+
+- El contador de la barra superior ("N clics en vivo") muestra el **total real de clics** guardado en Supabase para ese `site_id` (función pública `get_public_stats`, devuelve solo el número).
+- El detalle (visitas, dispositivos, origen, clics por link) lo ve solo el dueño, en el panel → **Analíticas en Vivo**.
+- Cada cliente guarda sus datos locales con su propio `VITE_SITE_ID`, así que varios biolinks en el mismo dominio no se mezclan.
+- El botón **"Probar Clic en Vivo"** del panel manda clics **reales** a Supabase. Después de probar, usar **Reiniciar métricas**.
+- `get_public_stats` está en `supabase/schema.sql` (sección 9). Ya está creada en el proyecto Biolink; solo hace falta ejecutarla si algún día armás un proyecto Supabase nuevo.
+
+---
+
 ## Problemas frecuentes
 
 | Síntoma | Causa probable | Solución |
 |---|---|---|
+| El contador de clics aparece en 0 o no carga | Falta la función `get_public_stats` en Supabase o `VITE_SITE_ID` mal | Ejecutar `supabase/schema.sql` y revisar el site_id |
 | La foto de perfil no aparece | Falta `public/avatar.jpg` o tiene otro nombre/extensión | Subirlo exactamente como `public/avatar.jpg` y recargar con Ctrl+F5 |
 | "Falta configurar Supabase (VITE_SUPABASE_URL...)" | El build se hizo sin las variables VITE_* | Poner las variables en el paso *Build* de `.github/workflows/deploy.yml` (ver paso 3) y hacer push |
 | "Correo o contraseña incorrectos" | Usuario mal escrito o dominio distinto | Revisar que el correo en Supabase sea `usuario@<VITE_LOGIN_DOMAIN>` |

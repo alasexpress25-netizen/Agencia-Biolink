@@ -219,3 +219,22 @@ drop trigger if exists on_auth_user_created_site on auth.users;
 create trigger on_auth_user_created_site
   after insert on auth.users
   for each row execute function public.handle_new_user_site();
+
+
+-- 9) Total público de clics (lo ve cualquier visitante; solo el número) ----
+create or replace function public.get_public_stats(p_site_id text)
+returns jsonb
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select jsonb_build_object(
+    'totalClicks', count(*) filter (where kind = 'click')
+  )
+  from public.analytics_events
+  where site_id = p_site_id;
+$$;
+
+revoke all on function public.get_public_stats(text) from public;
+grant execute on function public.get_public_stats(text) to anon, authenticated;

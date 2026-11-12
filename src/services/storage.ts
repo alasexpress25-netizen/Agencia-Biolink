@@ -3,12 +3,14 @@ import { DEFAULT_LINKS, DEFAULT_PROFILE, THEME_PRESETS } from '../data/defaultDa
 import { supabase, SITE_ID } from './supabase';
 import { AVATAR_URL } from '../utils/avatar';
 
+// Claves propias de cada cliente (SITE_ID): varios biolinks en el mismo dominio no mezclan datos
 const STORAGE_KEYS = {
-  LINKS: 'elamor_biolink_links_v1',
-  PROFILE: 'elamor_biolink_profile_v1',
-  THEME: 'elamor_biolink_theme_v1',
-  ANALYTICS: 'elamor_biolink_analytics_v1',
+  LINKS: `elamor_biolink_links_v1:${SITE_ID}`,
+  PROFILE: `elamor_biolink_profile_v1:${SITE_ID}`,
+  THEME: `elamor_biolink_theme_v1:${SITE_ID}`,
+  ANALYTICS: `elamor_biolink_analytics_v1:${SITE_ID}`,
 };
+const VISIT_SESSION_KEY = `biolink_visit_sent:${SITE_ID}`;
 
 let syncTimeout: ReturnType<typeof setTimeout> | null = null;
 let applyingRemote = false; // evita re-guardar lo que acabamos de bajar del servidor
@@ -192,8 +194,8 @@ export const storageService = {
   recordVisit(): AnalyticsData {
     // Una visita por sesión de pestaña (recargar no infla el contador)
     try {
-      if (!sessionStorage.getItem('biolink_visit_sent')) {
-        sessionStorage.setItem('biolink_visit_sent', '1');
+      if (!sessionStorage.getItem(VISIT_SESSION_KEY)) {
+        sessionStorage.setItem(VISIT_SESSION_KEY, '1');
         sendTrack('visit');
       }
     } catch {
@@ -216,6 +218,7 @@ export const storageService = {
       ...currentAnalytics,
       totalClicks: (currentAnalytics.totalClicks || 0) + 1,
     };
+    this.saveAnalytics(updatedAnalytics);
     return { updatedAnalytics, updatedLinks };
   },
 
@@ -332,6 +335,20 @@ export const storageService = {
     }
     emitSync('saved');
     return { ok: true, message: 'Guardado en la nube.' };
+  },
+
+  // Total REAL de clics del sitio (público: solo el número). Lo ve cualquier visitante.
+  async fetchPublicStats(): Promise<AnalyticsData | null> {
+    if (!supabase) return null;
+    try {
+      const { data, error } = await supabase.rpc('get_public_stats', { p_site_id: SITE_ID });
+      if (error || !data || typeof data.totalClicks !== 'number') return null;
+      const merged: AnalyticsData = { ...this.getAnalytics(), totalClicks: data.totalClicks };
+      this.saveAnalytics(merged);
+      return merged;
+    } catch {
+      return null;
+    }
   },
 
   // Métricas reales desde el servidor (solo dueño)

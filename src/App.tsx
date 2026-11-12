@@ -84,6 +84,11 @@ function AppContent({ onDefaultLang }: { onDefaultLang: (l: Lang) => void }) {
     setTheme(loadedTheme);
     setAnalytics(updatedAnalytics);
 
+    // Total real de clics (desde Supabase) para el contador público
+    storageService.fetchPublicStats().then((stats) => {
+      if (stats) setAnalytics((prev) => ({ ...prev, totalClicks: stats.totalClicks }));
+    });
+
     // Configuración publicada en Supabase: es la que ven todos los visitantes
     storageService.fetchRemoteConfig().then((remote) => {
       setRemoteStatus(storageService.getRemoteStatus());
