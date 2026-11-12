@@ -1,58 +1,97 @@
 {
   "profile": {
-    "name": "Unhas Imbituba",
-    "appName": "Thays Biolink",
-    "browserTabTitle": "Thays Unhas",
-    "metaDescription": "Agende seu horário e fale com a Thays",
-    "handle": "@thayanacletounhas",
-    "bio": "Esmaltação em gel e técnica russa • Cutículas impecáveis",
-    "avatarUrl": "avatar.jpg",
-    "verified": false,
-    "location": "Alto Arroio - Imbituba",
-    "footerText": "© Thays Anacleto unhas • Unhas Perfeitas",
-    "featuredMedia": {
-      "enabled": false,
-      "title": "Unhas esmaltadas",
-      "subtitle": "Assista agora no YouTube",
-      "tag": "DESTAQUE",
-      "videoUrl": "https://www.youtube.com",
-      "thumbnailUrl": ""
+    "bio": "Escreva aqui uma frase curta sobre você ou seu negócio. Para mudar, abra Configurar → aba Video Destacado / Personalizar Textos.",
+    "name": "Seu Nome ou Negócio",
+    "handle": "@seuusuario",
+    "appName": "Meu BioLink",
+    "location": "Sua Cidade - UF",
+    "services": [
+      {
+        "id": "srv-1",
+        "icon": "✨",
+        "name": "Serviço de exemplo 1",
+        "badge": "MAIS PROCURADO",
+        "price": "R$ 150",
+        "active": true,
+        "duration": "60 min",
+        "description": "Troque este texto pela descrição do seu serviço. Edite em Configurar → aba Servicios & Turnos."
+      },
+      {
+        "id": "srv-2",
+        "icon": "📅",
+        "name": "Serviço de exemplo 2",
+        "badge": "RÁPIDO",
+        "price": "R$ 80",
+        "active": true,
+        "duration": "30 min",
+        "description": "Você pode mudar nome, duração, preço, ícone e selo. Também pode desativar o que não usar."
+      },
+      {
+        "id": "srv-3",
+        "icon": "🎁",
+        "name": "Serviço de exemplo 3",
+        "badge": "GRÁTIS",
+        "price": "Grátis",
+        "active": true,
+        "duration": "45 min",
+        "description": "Exemplo de serviço sem custo. Apague ou edite quando quiser."
+      }
+    ],
+    "verified": true,
+    "avatarUrl": "./avatar.jpg",
+    "footerText": "© Seu Nome • Todos os direitos reservados",
+    "pwaIconUrl": "https://images.unsplash.com/photo-1519817650390-64a93db51149?w=400&auto=format&fit=crop&q=80",
+    "customTexts": {
+      "categoryAll": "Todos",
+      "emptyStateText": "Nenhum link nesta categoria.",
+      "topBarLiveBadge": "cliques ao vivo",
+      "topBarButtonText": "Configurar",
+      "categoryCommunity": "Comunidade",
+      "categoryDonations": "Apoie",
+      "verifiedBadgeText": "Perfil de exemplo",
+      "categoryMultimedia": "Vídeos",
+      "shareModalButtonText": "Ver QR Code e Compartilhar"
     },
+    "defaultLang": "pt",
     "socialLinks": [
       {
         "id": "soc-1",
-        "platform": "whatsapp",
+        "url": "https://wa.me/5500000000000",
         "label": "WhatsApp",
-        "url": "https://wa.me/5548999053493?text=Ol%C3%A1%20Thays,%20quero%20saber%20mais",
-        "active": true
+        "active": true,
+        "platform": "whatsapp"
       },
       {
         "id": "soc-2",
-        "platform": "instagram",
+        "url": "https://instagram.com/seuusuario",
         "label": "Instagram",
-        "url": "https://instagram.com/thayanacletounhas",
-        "active": true
+        "active": true,
+        "platform": "instagram"
+      },
+      {
+        "id": "soc-3",
+        "url": "https://youtube.com/@seucanal",
+        "label": "YouTube",
+        "active": true,
+        "platform": "youtube"
+      },
+      {
+        "id": "soc-4",
+        "url": "mailto:seuemail@exemplo.com",
+        "label": "Contato",
+        "active": true,
+        "platform": "email"
       }
     ],
-    "customTexts": {
-      "topBarButtonText": "Configurar",
-      "topBarLiveBadge": "ao vivo",
-      "shareModalButtonText": "Ver Código QR e Compartilhar",
-      "categoryAll": "Todos",
-      "categoryCommunity": "",
-      "categoryMultimedia": "",
-      "categoryDonations": "",
-      "emptyStateText": "Nenhum link nesta categoria.",
-      "verifiedBadgeText": ""
-    },
-    "pwaIconUrl": "https://images.unsplash.com/photo-1519817650390-64a93db51149?w=400&auto=format&fit=crop&q=80",
-    "companyBranding": {
+    "featuredMedia": {
+      "tag": "DESTAQUE",
+      "title": "Vídeo em destaque (exemplo)",
       "enabled": true,
-      "name": "LA VISUAL MARKETING - Federico Sebastián Allan",
-      "logoUrl": "la-visual-marketing.png",
-      "websiteUrl": "https://lavisualmk.alastecno.com",
-      "label": "Desarrollado & Diseñado por"
+      "subtitle": "Troque pelo link do seu vídeo do YouTube",
+      "videoUrl": "https://pub-0a20faa9d44b482b8257219d4348edef.r2.dev/c250835c-89e6-4f09-b749-fadc2d95030a/1793146576885_impacto_tv_anuncio_verao_vertical_9x16.mp4",
+      "thumbnailUrl": "https://pub-0a20faa9d44b482b8257219d4348edef.r2.dev/c250835c-89e6-4f09-b749-fadc2d95030a/1791239466144_1000609661.png"
     },
+    "browserTabTitle": "Meu BioLink",
     "categoryFilters": {
       "enabled": false,
       "activeCategories": [
@@ -62,185 +101,132 @@
         "donations"
       ]
     },
-    "services": [
-      {
-        "id": "srv-1",
-        "name": "Esmaltação em gel",
-        "duration": "",
-        "price": "",
-        "description": "Esmaltação em gel com acabamento perfeito e durabilidade.",
-        "icon": "💅",
-        "badge": "",
-        "active": true
-      },
-      {
-        "id": "srv-2",
-        "name": "Cutículas – Técnica Russa",
-        "duration": "",
-        "price": "",
-        "description": "Remoção de cutículas com técnica russa, resultado impecável.",
-        "icon": "✨",
-        "badge": "",
-        "active": true
-      }
-    ],
-    "defaultLang": "pt"
+    "companyBranding": {
+      "name": "LA VISUAL MARKETING - Federico Sebastián Allan",
+      "label": "Desenvolvido & Desenhado por",
+      "enabled": true,
+      "logoUrl": "la-visual-marketing.png",
+      "websiteUrl": "https://lavisualmk.alastecno.com"
+    },
+    "metaDescription": "Todos os meus links em um só lugar"
   },
   "services": [
     {
       "id": "srv-1",
-      "name": "Esmaltação em gel",
-      "duration": "",
-      "price": "",
-      "description": "Esmaltação em gel com acabamento perfeito e durabilidade.",
-      "icon": "💅",
-      "badge": "",
-      "active": true
+      "icon": "✨",
+      "name": "Serviço de exemplo 1",
+      "badge": "MAIS PROCURADO",
+      "price": "R$ 150",
+      "active": true,
+      "duration": "60 min",
+      "description": "Troque este texto pela descrição do seu serviço. Edite em Configurar → aba Servicios & Turnos."
     },
     {
       "id": "srv-2",
-      "name": "Cutículas – Técnica Russa",
-      "duration": "",
-      "price": "",
-      "description": "Remoção de cutículas com técnica russa, resultado impecável.",
-      "icon": "✨",
-      "badge": "",
-      "active": true
+      "icon": "📅",
+      "name": "Serviço de exemplo 2",
+      "badge": "RÁPIDO",
+      "price": "R$ 80",
+      "active": true,
+      "duration": "30 min",
+      "description": "Você pode mudar nome, duração, preço, ícone e selo. Também pode desativar o que não usar."
+    },
+    {
+      "id": "srv-3",
+      "icon": "🎁",
+      "name": "Serviço de exemplo 3",
+      "badge": "GRÁTIS",
+      "price": "Grátis",
+      "active": true,
+      "duration": "45 min",
+      "description": "Exemplo de serviço sem custo. Apague ou edite quando quiser."
     }
   ],
   "links": [
     {
-      "id": "link-whatsapp-group",
-      "title": "Fale comigo no WhatsApp",
-      "subtitle": "Agendamentos e dúvidas",
-      "url": "https://wa.me/5548999053493?text=Ol%C3%A1%20Thays,%20quero%20saber%20mais",
+      "id": "link-whatsapp",
+      "url": "https://wa.me/5500000000000",
       "icon": "whatsapp",
       "badge": {
-        "text": "AGENDAR",
+        "text": "EXEMPLO",
         "color": "emerald"
       },
-      "animation": "pulse",
+      "title": "Fale comigo no WhatsApp",
       "active": true,
       "clicks": 0,
-      "isPinned": true,
       "category": "community",
-      "iconType": "custom",
-      "customImageUrl": "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 120 120\">\n      <defs>\n        <radialGradient id=\"waGrad\" cx=\"35%\" cy=\"30%\" r=\"70%\">\n          <stop offset=\"0%\" stop-color=\"%234ade80\"/>\n          <stop offset=\"50%\" stop-color=\"%2322c55e\"/>\n          <stop offset=\"90%\" stop-color=\"%2315803d\"/>\n          <stop offset=\"100%\" stop-color=\"%2314532d\"/>\n        </radialGradient>\n        <radialGradient id=\"waHighlight\" cx=\"30%\" cy=\"20%\" r=\"50%\">\n          <stop offset=\"0%\" stop-color=\"%23ffffff\" stop-opacity=\"0.8\"/>\n          <stop offset=\"60%\" stop-color=\"%23ffffff\" stop-opacity=\"0\"/>\n        </radialGradient>\n        <filter id=\"waShadow\" x=\"-20%\" y=\"-20%\" width=\"150%\" height=\"150%\">\n          <feDropShadow dx=\"0\" dy=\"8\" stdDeviation=\"6\" flood-color=\"%2314532d\" flood-opacity=\"0.5\"/>\n        </filter>\n      </defs>\n      <circle cx=\"60\" cy=\"60\" r=\"46\" fill=\"url(%23waGrad)\" filter=\"url(%23waShadow)\"/>\n      <ellipse cx=\"48\" cy=\"36\" rx=\"28\" ry=\"16\" fill=\"url(%23waHighlight)\"/>\n      <path d=\"M42 40 C42 40 46 48 50 52 C54 56 62 60 62 60 L68 54 C69 53 71 53 73 54 L81 58 C83 59 84 62 83 64 C81 72 72 78 64 78 C52 78 38 64 38 52 C38 44 44 35 52 33 C54 32 57 33 58 35 L62 43 C63 45 63 47 62 48 Z\" fill=\"%23ffffff\" filter=\"drop-shadow(0px 3px 4px rgba(0,0,0,0.3))\"/>\n    </svg>",
-      "pop3d": {
-        "enabled": true,
-        "foregroundMotion": "bounce",
-        "popIntensity": "medium",
-        "backgroundStyle": "darkened",
-        "interactiveTilt": true,
-        "isAvatarPhoto": false
-      }
+      "iconType": "standard",
+      "isPinned": true,
+      "subtitle": "Troque pelo seu número em Configurar → aba Enlaces",
+      "animation": "pulse"
     },
     {
       "id": "link-turnos-whatsapp",
-      "title": "Agendar horário",
-      "subtitle": "Escolha o serviço e envie pelo WhatsApp",
       "url": "#turnos",
       "icon": "calendar",
-      "iconType": "standard",
       "badge": {
         "text": "NOVO",
         "color": "amber"
       },
-      "animation": "none",
+      "title": "Agende seu horário",
       "active": true,
       "clicks": 0,
-      "isPinned": false,
-      "category": "community"
+      "category": "general",
+      "iconType": "standard",
+      "subtitle": "Abre a reserva por WhatsApp com os seus serviços",
+      "animation": "glow"
     },
     {
-      "id": "link-youtube-live",
-      "title": "Transmissão ao vivo",
-      "subtitle": "Junte-se",
-      "url": "https://youtube.com/@thaisanacletovivo",
-      "icon": "video",
+      "id": "link-instagram",
+      "url": "https://instagram.com/seuusuario",
+      "icon": "instagram",
+      "title": "Meu Instagram",
+      "active": true,
+      "clicks": 0,
+      "category": "social",
+      "iconType": "standard",
+      "subtitle": "Use as setas do painel para mudar a ordem",
+      "animation": "none"
+    },
+    {
+      "id": "link-youtube",
+      "url": "https://youtube.com/@seucanal",
+      "icon": "youtube",
       "badge": {
-        "text": "EN VIVO",
+        "text": "VÍDEOS",
         "color": "red"
       },
-      "animation": "glow",
-      "active": false,
+      "title": "Meu canal no YouTube",
+      "active": true,
       "clicks": 0,
-      "isPinned": true,
       "category": "multimedia",
-      "iconType": "custom",
-      "customImageUrl": "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=400&auto=format&fit=crop&q=80",
-      "pop3d": {
-        "enabled": true,
-        "foregroundMotion": "pulse",
-        "popIntensity": "medium",
-        "backgroundStyle": "darkened",
-        "interactiveTilt": true,
-        "isAvatarPhoto": true,
-        "avatarShape": "squircle"
-      }
-    },
-    {
-      "id": "link-courses",
-      "title": "Cursos e Aulas de Formação",
-      "subtitle": "Aprenda com nossos cursos",
-      "url": "cursos.html",
-      "icon": "book",
-      "iconType": "custom",
-      "customImageUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80",
-      "pop3d": {
-        "enabled": true,
-        "isAvatarPhoto": true,
-        "avatarShape": "circle",
-        "foregroundMotion": "float",
-        "popIntensity": "medium",
-        "backgroundStyle": "darkened",
-        "backgroundVisibility": 0.8,
-        "offsetDirection": "top-left",
-        "interactiveTilt": true
-      },
-      "badge": {
-        "text": "DOCENTES",
-        "color": "amber"
-      },
-      "animation": "bounce",
-      "active": false,
-      "clicks": 0,
-      "category": "community"
+      "iconType": "standard",
+      "subtitle": "Desative um link sem apagá-lo, quando quiser",
+      "animation": "none"
     }
   ],
   "theme": {
-    "presetId": "oasis",
-    "bgType": "gradient",
-    "bgGradient": "from-emerald-950 via-teal-950 to-slate-950",
-    "bgSolidColor": "#022c22",
-    "cardStyle": "glass",
-    "cardBgColor": "rgba(6, 78, 59, 0.45)",
-    "cardTextColor": "#ecfdf5",
-    "cardBorderColor": "rgba(16, 185, 129, 0.3)",
-    "accentColor": "#10b981",
-    "borderRadius": "rounded-2xl",
+    "bgType": "mesh",
+    "presetId": "celestial",
+    "cardStyle": "neon",
     "fontStyle": "sans",
-    "buttonHoverEffect": "scale",
-    "showBackgroundBubbles": true,
+    "bgGradient": "from-indigo-950 via-slate-900 to-purple-950",
+    "accentColor": "#c084fc",
+    "buttonGapPx": 20,
+    "cardBgColor": "rgba(30, 27, 75, 0.65)",
+    "bgSolidColor": "#0b0f19",
+    "borderRadius": "rounded-xl",
     "buttonSpacing": "normal",
-    "buttonGapPx": 42
+    "cardTextColor": "#f8fafc",
+    "cardBorderColor": "rgba(168, 85, 247, 0.4)",
+    "buttonHoverEffect": "glow",
+    "showBackgroundBubbles": true
   },
   "analytics": {
     "totalVisits": 0,
     "totalClicks": 0,
     "recentEvents": [],
-    "referrerCounts": {
-      "WhatsApp": 0,
-      "Instagram": 0,
-      "Directo": 0,
-      "TikTok": 0,
-      "YouTube": 0,
-      "Google": 0
-    },
-    "deviceCounts": {
-      "mobile": 0,
-      "desktop": 0,
-      "tablet": 0
-    }
+    "referrerCounts": {},
+    "deviceCounts": {}
   }
 }
