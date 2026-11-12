@@ -176,6 +176,12 @@ function AppContent({ onDefaultLang }: { onDefaultLang: (l: Lang) => void }) {
 
     // Open target link
     if (link.url) {
+      // Páginas internas (cursos.html, servicios.html...) en la misma pestaña/PWA,
+      // así "Volver al BioLink" regresa a esta misma página en lugar de abrir otra copia.
+      if (/^(?:\.\/)?[\w-]+\.html(?:[?#].*)?$/i.test(link.url)) {
+        window.location.href = link.url;
+        return;
+      }
       window.open(link.url, '_blank', 'noopener,noreferrer');
     }
   };

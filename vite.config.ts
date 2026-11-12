@@ -89,7 +89,7 @@ export default defineConfig(({ mode }) => {
           // Sin esto, ?servicio=... no coincide con el precache y el SW devuelve index.html
           ignoreURLParametersMatching: [/^utm_/, /^fbclid$/, /^servicio$/],
           // Las páginas estáticas NO deben caer al index.html de la SPA
-          navigateFallbackDenylist: [/turnos\.html/, /servicios\.html/, /pagina\.html/],
+          navigateFallbackDenylist: [/turnos\.html/, /servicios\.html/, /cursos\.html/, /pagina\.html/],
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
