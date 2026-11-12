@@ -122,6 +122,8 @@ export interface ProfileConfig {
     videoUrl: string;
     thumbnailUrl: string;
     embedMode?: 'popup' | 'newTab';
+    /** Vista previa automática en bucle y sin sonido en la tarjeta (por defecto activa) */
+    autoplayLoop?: boolean;
   };
   socialLinks: SocialLink[];
   customTexts?: CustomTextsConfig;

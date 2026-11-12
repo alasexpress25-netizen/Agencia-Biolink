@@ -79,7 +79,9 @@ import { THEME_PRESETS, DEFAULT_SERVICES } from '../data/defaultData';
 import { ICON_3D_PRESETS } from '../data/icon3dPresets';
 import { AVATAR_PHOTO_PRESETS } from '../data/avatarPhotoPresets';
 import { AVATAR_URL } from '../utils/avatar';
-import { extractYouTubeId, getYouTubeThumbnail, formatSocialUrl } from '../utils/youtube';
+import { formatSocialUrl } from '../utils/youtube';
+import { fetchVimeoThumbnail, getAutoThumbnail, getVideoInfo, isAutoThumbnail } from '../utils/video';
+import { VideoThumb } from './VideoThumb';
 import { downloadPwaIconSet } from '../utils/pwaIcons';
 
 
@@ -465,15 +467,19 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     storageService.saveProfile(updatedProfile);
   };
 
-  // Auto-detect YouTube thumbnail
-  const handleAutoThumbnailFromYouTube = () => {
+  // Auto-detect thumbnail (YouTube / Vimeo)
+  const handleAutoThumbnailFromYouTube = async () => {
     const currentVideoUrl = profile.featuredMedia?.videoUrl || '';
-    const youtubeId = extractYouTubeId(currentVideoUrl);
-    if (!youtubeId) {
-      showNotification('No se detectó un enlace válido de YouTube. Introduce un enlace de YouTube primero.');
+    const info = getVideoInfo(currentVideoUrl);
+    if (info.kind === 'file') {
+      showNotification('Los archivos de video (.mp4...) muestran su primer cuadro solos: deja la imagen vacía.');
       return;
     }
-    const thumb = getYouTubeThumbnail(currentVideoUrl);
+    const thumb = getAutoThumbnail(currentVideoUrl) || (await fetchVimeoThumbnail(currentVideoUrl));
+    if (!thumb) {
+      showNotification('No se pudo obtener una miniatura automática de este enlace. Pega la URL de una imagen manualmente.');
+      return;
+    }
     const updatedMedia = {
       ...(profile.featuredMedia || {
         enabled: true,
@@ -488,7 +494,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     const updatedProfile = { ...profile, featuredMedia: updatedMedia };
     onUpdateProfile(updatedProfile);
     storageService.saveProfile(updatedProfile);
-    showNotification('¡Miniatura de YouTube obtenida automáticamente!');
+    showNotification('¡Miniatura obtenida automáticamente!');
   };
 
   // Add new social link
@@ -844,7 +850,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                     <div className="flex items-center justify-between mb-1.5">
                       <label className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
                         <Video className="w-4 h-4 text-amber-400" />
-                        <span>Enlace del Video (YouTube o URL) *</span>
+                        <span>Enlace del Video (YouTube, Vimeo, Instagram, TikTok, Facebook, Drive o .mp4) *</span>
                       </label>
                       <button
                         type="button"
@@ -852,7 +858,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                         className="text-[11px] font-semibold text-amber-400 hover:text-amber-300 flex items-center gap-1 bg-amber-500/10 hover:bg-amber-500/20 px-2.5 py-1 rounded-lg border border-amber-500/20 cursor-pointer"
                       >
                         <Wand2 className="w-3 h-3" />
-                        <span>Obtener Miniatura de YouTube</span>
+                        <span>Obtener Miniatura Automática</span>
                       </button>
                     </div>
 
@@ -862,17 +868,23 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                         value={profile.featuredMedia.videoUrl}
                         onChange={(e) => {
                           const val = e.target.value;
+                          const cur = profile.featuredMedia!;
+                          // Si la miniatura era automática/por defecto, sigue al nuevo video
+                          const thumb = isAutoThumbnail(cur.thumbnailUrl)
+                            ? getAutoThumbnail(val) || ''
+                            : cur.thumbnailUrl;
                           const updated = {
                             ...profile,
                             featuredMedia: {
-                              ...profile.featuredMedia!,
+                              ...cur,
                               videoUrl: val,
+                              thumbnailUrl: thumb,
                             },
                           };
                           onUpdateProfile(updated);
                           storageService.saveProfile(updated);
                         }}
-                        placeholder="https://www.youtube.com/watch?v=... o https://youtu.be/..."
+                        placeholder="https://youtu.be/... · vimeo.com/... · instagram.com/reel/... · tiktok.com/... · archivo.mp4"
                         className="flex-1 px-3.5 py-2.5 text-xs font-mono rounded-xl bg-slate-900 border border-slate-800 text-white placeholder-slate-600 focus:outline-none focus:border-amber-500"
                       />
 
@@ -888,9 +900,33 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                       </a>
                     </div>
                     <p className="text-[11px] text-slate-500 mt-1">
-                      Pega cualquier enlace de video de YouTube (ej: https://www.youtube.com/watch?v=...) o video en vivo.
+                      Funciona con YouTube, Vimeo, Instagram (reels/posts), TikTok, Facebook, Google Drive y archivos .mp4/.webm. Si el enlace no se puede mostrar dentro de la página, se ofrece abrirlo en pestaña nueva.
                     </p>
                   </div>
+
+                  {/* Autoplay loop */}
+                  <label className="flex items-start gap-3 p-3 rounded-xl border border-slate-800 bg-slate-900 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={profile.featuredMedia.autoplayLoop !== false}
+                      onChange={(e) => {
+                        const updated = {
+                          ...profile,
+                          featuredMedia: { ...profile.featuredMedia!, autoplayLoop: e.target.checked },
+                        };
+                        onUpdateProfile(updated);
+                        storageService.saveProfile(updated);
+                      }}
+                      className="mt-0.5 accent-amber-500"
+                    />
+                    <span>
+                      <span className="block font-bold text-xs text-white">Reproducir automáticamente en bucle (sin sonido)</span>
+                      <span className="block text-[11px] text-slate-400 mt-0.5">
+                        El video se ve en movimiento dentro de la tarjeta apenas abre la página (YouTube, Vimeo y archivos .mp4).
+                        Si el enlace falla, se muestra solo la miniatura. Instagram, TikTok, Facebook y Drive no permiten autoplay: muestran la miniatura.
+                      </span>
+                    </span>
+                  </label>
 
                   {/* Mode of reproduction */}
                   <div>
@@ -919,7 +955,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                       >
                         <div className="font-bold text-xs text-white">Reproductor Emergente (Dentro de la web)</div>
                         <div className="text-[11px] text-slate-400 mt-0.5">
-                          Abre un reproductor de YouTube interactivo sin que el usuario salga de tu página.
+                          Abre el reproductor del video sin que el usuario salga de tu página.
                         </div>
                       </button>
 
@@ -942,9 +978,9 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                             : 'bg-slate-900 border-slate-800 text-slate-400'
                         }`}
                       >
-                        <div className="font-bold text-xs text-white">Abrir en YouTube Directamente</div>
+                        <div className="font-bold text-xs text-white">Abrir en el Sitio Original</div>
                         <div className="text-[11px] text-slate-400 mt-0.5">
-                          Redirige o abre la app oficial de YouTube en una pestaña nueva.
+                          Abre el enlace (o la app oficial) en una pestaña nueva.
                         </div>
                       </button>
                     </div>
@@ -1022,7 +1058,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
 
                     <div>
                       <label className="block text-xs font-semibold text-slate-300 mb-1">
-                        URL de la Imagen de Fondo / Miniatura
+                        URL de la Imagen de Fondo / Miniatura (opcional)
                       </label>
                       <input
                         type="url"
@@ -1038,9 +1074,12 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                           onUpdateProfile(updated);
                           storageService.saveProfile(updated);
                         }}
-                        placeholder="https://images.unsplash.com/... o https://img.youtube.com/..."
+                        placeholder="Vacío = miniatura del propio video"
                         className="w-full px-3 py-2 text-xs font-mono rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-amber-500"
                       />
+                      <p className="text-[11px] text-slate-500 mt-1">
+                        Déjalo vacío para usar la miniatura del video (YouTube/Vimeo) o su primer cuadro (.mp4). Debe ser un enlace directo a una imagen (no sirven links de stories o posts de Instagram).
+                      </p>
                     </div>
                   </div>
 
@@ -1051,15 +1090,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                     </label>
                     <div className="relative rounded-2xl overflow-hidden border border-slate-800 max-w-md bg-slate-900">
                       <div className="relative h-40 w-full overflow-hidden">
-                        <img
-                          src={profile.featuredMedia.thumbnailUrl}
-                          alt="Preview"
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src =
-                              'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800';
-                          }}
-                        />
+                        <VideoThumb media={profile.featuredMedia} className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
                         {profile.featuredMedia.tag && (
                           <span className="absolute top-3 left-3 px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-500 text-slate-950">

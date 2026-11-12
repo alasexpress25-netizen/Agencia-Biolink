@@ -1,5 +1,6 @@
-import React from 'react';
-import { Play, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { Play, Sparkles, Volume2 } from 'lucide-react';
+import { VideoPreview } from './VideoPreview';
 import { ProfileConfig, ThemeConfig } from '../types';
 
 interface FeaturedCardProps {
@@ -9,6 +10,8 @@ interface FeaturedCardProps {
 }
 
 export const FeaturedCard: React.FC<FeaturedCardProps> = ({ media, theme, onClick }) => {
+  const [playing, setPlaying] = useState(false);
+
   if (!media || !media.enabled) return null;
 
   return (
@@ -23,15 +26,7 @@ export const FeaturedCard: React.FC<FeaturedCardProps> = ({ media, theme, onClic
       >
         {/* Background Image with Dark Vignette */}
         <div className="relative h-44 sm:h-52 w-full overflow-hidden">
-          <img
-            src={media.thumbnailUrl}
-            alt={media.title}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src =
-                'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80';
-            }}
-          />
+          <VideoPreview media={media} onPlayingChange={setPlaying} />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" />
 
           {/* Tag Badge */}
@@ -44,6 +39,12 @@ export const FeaturedCard: React.FC<FeaturedCardProps> = ({ media, theme, onClic
 
           {/* Central Play Button */}
           <div className="absolute inset-0 flex items-center justify-center">
+            {playing ? (
+              <div className="absolute bottom-3 right-3 flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-black/60 text-white backdrop-blur-sm">
+                <Volume2 className="w-3 h-3" />
+                <span>Toca para ver con sonido</span>
+              </div>
+            ) : (
             <div
               className="w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-transform duration-300 group-hover:scale-110"
               style={{
@@ -53,6 +54,7 @@ export const FeaturedCard: React.FC<FeaturedCardProps> = ({ media, theme, onClic
             >
               <Play className="w-6 h-6 fill-current ml-0.5" />
             </div>
+            )}
           </div>
         </div>
 

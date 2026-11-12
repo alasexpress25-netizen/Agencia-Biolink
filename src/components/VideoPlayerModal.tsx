@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, ExternalLink, Sparkles } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
-import { extractYouTubeId, getYouTubeEmbedUrl } from '../utils/youtube';
+import { getVideoInfo } from '../utils/video';
 
 interface VideoPlayerModalProps {
   isOpen: boolean;
@@ -25,8 +25,7 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
   const { t } = useLanguage();
   if (!isOpen) return null;
 
-  const youtubeId = extractYouTubeId(videoUrl);
-  const embedUrl = getYouTubeEmbedUrl(videoUrl);
+  const info = getVideoInfo(videoUrl);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-fade-in">
@@ -63,10 +62,23 @@ export const VideoPlayerModal: React.FC<VideoPlayerModalProps> = ({
         </div>
 
         {/* Video Player Frame */}
-        <div className="relative w-full bg-black aspect-video flex items-center justify-center">
-          {youtubeId ? (
+        <div
+          className={`relative bg-black flex items-center justify-center mx-auto w-full ${
+            info.vertical ? 'aspect-[9/16] max-h-[75vh] sm:max-w-sm' : 'aspect-video'
+          }`}
+        >
+          {info.kind === 'file' && info.fileUrl ? (
+            <video
+              src={info.fileUrl}
+              title={title}
+              className="w-full h-full"
+              controls
+              autoPlay
+              playsInline
+            />
+          ) : info.embedSrc ? (
             <iframe
-              src={embedUrl}
+              src={info.embedSrc}
               title={title}
               className="w-full h-full border-0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
