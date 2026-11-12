@@ -1,0 +1,1 @@
+  update auth.users set encrypted_password = extensions.crypt('NUEVA_CLAVE', extensions.gen_salt('bf')) where email = 'thays@lavisualmk.alastecno.com';
